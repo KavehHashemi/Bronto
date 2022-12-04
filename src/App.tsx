@@ -1,14 +1,16 @@
+/* eslint-disable array-callback-return */
 import "./App.css";
+import { useEffect } from "react";
+import events from "./data/sampleData.json";
 import CalendarComponent from "./components/CalendarComponent";
-import { ApolloProvider } from "@apollo/client";
-import client from "./Apollo";
+import { addEvent, fetchEvents, loadSampleEvents } from "./FCWrapper";
 
-function App() {
+const App = () => {
   return (
-    <ApolloProvider client={client}>
+    <>
       <CalendarComponent />
-    </ApolloProvider>
+    </>
   );
-}
+};
 
 export default App;

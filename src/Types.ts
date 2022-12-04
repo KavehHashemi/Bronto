@@ -1,9 +1,9 @@
 export type EventType = {
-  id: string | null;
-  resourceId: string | null;
+  id: string;
+  resourceId: string;
   title: string | null;
-  start: Date | null;
-  end: Date | null;
+  start: Date;
+  end: Date;
   description: string | null;
   operations: string[] | null;
 };

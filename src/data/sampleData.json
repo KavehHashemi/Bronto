@@ -1,0 +1,24 @@
+{
+  "events": [
+    {
+      "id": "1",
+      "resourceId": "1",
+      "title": "event 1",
+      "description": "first event's description"
+    },
+    {
+      "id": "2",
+      "resourceId": "2",
+      "title": "event 2",
+      "description": "second event's description"
+    }
+  ],
+  "resources": [
+    { "id": "1", "name": "resource 1" },
+    { "id": "2", "name": "resource 2" }
+  ],
+  "operations": [
+    { "id": "1", "name": "op. 1" },
+    { "id": "2", "name": "op. 2" }
+  ]
+}

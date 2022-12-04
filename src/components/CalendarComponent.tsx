@@ -1,23 +1,23 @@
 /* eslint-disable array-callback-return */
-import React from "react";
-import FullCalendar, {
-  EventApi,
-  EventDef,
-  DateSelectArg,
-  EventClickArg,
-  EventContentArg,
-  formatDate,
-} from "@fullcalendar/react";
-import resourceTimelinePlugin, {
-  ResourceTimelineView,
-} from "@fullcalendar/resource-timeline";
+import FullCalendar from "@fullcalendar/react";
+import "@fullcalendar/react/dist/vdom";
 import interactionPlugin from "@fullcalendar/interaction";
+import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import { useState, useRef, useEffect } from "react";
-import uuid from "react-uuid";
+import { v4 as uuid } from "uuid";
 import { ShowDialog, Duration, EventType, Operation, Resource } from "../Types";
+import { addEvent, fetchEvents, loadSampleEvents } from "../FCWrapper";
 
 const CalendarComponent = () => {
   const calendarRef = useRef<FullCalendar>(null);
+  let calendarApi = calendarRef.current?.getApi();
+  useEffect(() => {
+    if (calendarApi !== undefined) fetchEvents(calendarApi);
+  }, [calendarApi]);
+
+  useEffect(() => {
+    (async () => {})();
+  }, []);
   const [openDialog, setOpenDialog] = useState<ShowDialog>({
     event: false,
     date: false,
@@ -34,7 +34,7 @@ const CalendarComponent = () => {
 
   const plugins = [resourceTimelinePlugin, interactionPlugin];
   const [resources, setResources] = useState<Resource[]>([]);
-  const fetchEvents = () => {};
+  //const fetchEvents = () => {};
   const fetchResources = () => {};
   const fetchOperations = () => {};
 
@@ -53,7 +53,33 @@ const CalendarComponent = () => {
 
   const RearrangeEvents = () => {};
 
-  return <div>CalendarComponent</div>;
+  return (
+    <FullCalendar
+      plugins={plugins}
+      ref={calendarRef}
+      initialView="resourceTimelineWeek"
+      customButtons={{
+        goTo: {
+          text: "Go to...",
+        },
+      }}
+      headerToolbar={{
+        left: "goTo",
+        center: "title",
+        right: "prev,next,today",
+      }}
+      editable={true}
+      droppable={true}
+      height="auto"
+      resourceAreaHeaderContent="Resources"
+      resourceAreaWidth="150px"
+      slotMinWidth={80}
+      forceEventDuration={true}
+      eventResourceEditable={false}
+      defaultTimedEventDuration="00:30"
+      schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+    />
+  );
 };
 
 export default CalendarComponent;
