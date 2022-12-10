@@ -1,30 +1,44 @@
 import { v4 as uuid } from "uuid";
 import { eventsDB } from "./indexedDb/EventsDB";
-import { EventType } from "./Types";
+import { EventType, Resource } from "./Types";
 import { addHours } from "./Utils";
 import sampleData from "./data/sampleData.json";
-import FullCalendar, { CalendarApi } from "@fullcalendar/react";
+import { CalendarApi, EventInput } from "@fullcalendar/react";
+import { ResourceInput } from "@fullcalendar/resource-common";
+import { resourceDB } from "./indexedDb/ResourcesDB";
 
 ///EVENTS
-export const fetchEvents = async (calendarApi: CalendarApi) => {
-  console.log("fetch events called");
-
+export const fetchEvents = async (calendarApi?: CalendarApi) => {
   let residentEvents: number = await eventsDB.events.count();
-
   if (residentEvents === 0) {
     for (let ev in sampleData.events) {
       loadSampleEvents(sampleData.events[ev]);
     }
   }
   const db = await eventsDB.events.toArray();
-  let k = calendarApi?.addEvent(db);
-
-  console.log(k);
-  let evs = calendarApi?.getEvents();
-  console.log(evs);
+  for (let ev in db) {
+    let calendarEvent: EventInput = {
+      id: db[ev].id,
+      title: db[ev].title,
+      start: db[ev].start,
+      end: db[ev].end,
+      resourceId: db[ev].resourceId,
+      extendedProps: {
+        description: db[ev].description,
+        operations: db[ev].operations,
+      },
+      allDay: false,
+      durationEditable: true,
+      overlap: false,
+      resourceEditable: false,
+      editable: true,
+      startEditable: true,
+    };
+    calendarApi?.addEvent(calendarEvent);
+    let a = calendarApi?.getEvents();
+    //console.log(a);
+  }
 };
-
-export const addEventsToCalendar = async () => {};
 
 export const loadSampleEvents = async (event: any) => {
   let a: EventType = {
@@ -40,13 +54,42 @@ export const loadSampleEvents = async (event: any) => {
 };
 
 export const addEvent = async (event: EventType) => {
-  const a = await eventsDB.events.add(event);
+  await eventsDB.events.add(event);
 };
 export const editEvent = async () => {};
 export const deleteEvent = async () => {};
+
 ///RESOURCES
-export const fetchResources = async () => {};
-export const addResource = async () => {};
+export const fetchResources = async (calendarApi?: CalendarApi) => {
+  let residentResources: number = await resourceDB.resources.count();
+  if (residentResources === 0) {
+    for (let rsrc in sampleData.resources) {
+      await loadSampleResources(sampleData.resources[rsrc]);
+    }
+  }
+  const db = await resourceDB.resources.toArray();
+
+  for (let rsrc in db) {
+    let calendarResource: ResourceInput = {
+      id: db[rsrc].id,
+      title: db[rsrc].name,
+    };
+    let a = calendarApi?.addResource(calendarResource);
+    let b = calendarApi?.getResources();
+    console.log(a);
+    console.log(b);
+  }
+};
+export const loadSampleResources = async (resource: any) => {
+  let a: Resource = {
+    id: resource.id,
+    name: resource.name,
+  };
+  await addResource(a);
+};
+export const addResource = async (resource: Resource) => {
+  await resourceDB.resources.add(resource);
+};
 export const editResource = async () => {};
 export const deleteResource = async () => {};
 ///OPERATIONS

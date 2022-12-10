@@ -1,23 +1,24 @@
 /* eslint-disable array-callback-return */
-import FullCalendar from "@fullcalendar/react";
+import FullCalendar, { CalendarApi } from "@fullcalendar/react";
 import "@fullcalendar/react/dist/vdom";
 import interactionPlugin from "@fullcalendar/interaction";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import { ShowDialog, Duration, EventType, Operation, Resource } from "../Types";
-import { addEvent, fetchEvents, loadSampleEvents } from "../FCWrapper";
+import { fetchEvents, fetchResources } from "../FCWrapper";
+import { eventsDB } from "../indexedDb/EventsDB";
+import { resourceDB } from "../indexedDb/ResourcesDB";
 
 const CalendarComponent = () => {
   const calendarRef = useRef<FullCalendar>(null);
-  let calendarApi = calendarRef.current?.getApi();
-  useEffect(() => {
-    if (calendarApi !== undefined) fetchEvents(calendarApi);
-  }, [calendarApi]);
 
   useEffect(() => {
-    (async () => {})();
-  }, []);
+    let calendarApi = calendarRef.current?.getApi();
+    fetchResources();
+    fetchEvents(calendarApi);
+  }, [calendarRef]);
+
   const [openDialog, setOpenDialog] = useState<ShowDialog>({
     event: false,
     date: false,
@@ -35,7 +36,7 @@ const CalendarComponent = () => {
   const plugins = [resourceTimelinePlugin, interactionPlugin];
   const [resources, setResources] = useState<Resource[]>([]);
   //const fetchEvents = () => {};
-  const fetchResources = () => {};
+  // const fetchResources = () => {};
   const fetchOperations = () => {};
 
   const onDateClick = () => {};
@@ -57,6 +58,8 @@ const CalendarComponent = () => {
     <FullCalendar
       plugins={plugins}
       ref={calendarRef}
+      // events={eventsDB.events}
+      // resources={resourceDB.resources}
       initialView="resourceTimelineWeek"
       customButtons={{
         goTo: {

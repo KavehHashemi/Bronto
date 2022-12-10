@@ -1,7 +1,7 @@
 export type EventType = {
   id: string;
   resourceId: string;
-  title: string | null;
+  title: string;
   start: Date;
   end: Date;
   description: string | null;
@@ -9,13 +9,13 @@ export type EventType = {
 };
 
 export type Resource = {
-  id: string | null;
-  name: string | null;
+  id: string;
+  name: string;
 };
 
 export type Operation = {
-  id: string | null;
-  name: string | null;
+  id: string;
+  name: string;
 };
 
 export type ShowDialog = {
