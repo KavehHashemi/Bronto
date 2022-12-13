@@ -33,10 +33,23 @@ export const fetchEvents = async (calendarApi?: CalendarApi) => {
       resourceEditable: false,
       editable: true,
       startEditable: true,
+      interactive: true,
     };
     calendarApi?.addEvent(calendarEvent);
-    let a = calendarApi?.getEvents();
-    //console.log(a);
+    let resource = await createResource(calendarEvent.resourceId);
+    if (resource) calendarApi?.addResource(resource);
+  }
+};
+
+export const createResource = async (resourceId: string | undefined) => {
+  const db = await resourceDB.resources.toArray();
+  let calendarResource: ResourceInput;
+  for (let rsrc in db) {
+    if (db[rsrc].id === resourceId) {
+      console.log("found");
+      calendarResource = { id: resourceId, title: db[rsrc].name };
+      return calendarResource;
+    }
   }
 };
 
@@ -64,6 +77,7 @@ export const fetchResources = async (calendarApi?: CalendarApi) => {
   let residentResources: number = await resourceDB.resources.count();
   if (residentResources === 0) {
     for (let rsrc in sampleData.resources) {
+      console.log(sampleData.resources[rsrc]);
       await loadSampleResources(sampleData.resources[rsrc]);
     }
   }
@@ -74,10 +88,10 @@ export const fetchResources = async (calendarApi?: CalendarApi) => {
       id: db[rsrc].id,
       title: db[rsrc].name,
     };
-    let a = calendarApi?.addResource(calendarResource);
-    let b = calendarApi?.getResources();
-    console.log(a);
-    console.log(b);
+    // let a = calendarApi?.addResource(calendarResource);
+    // let b = calendarApi?.getResources();
+    // console.log(a);
+    // console.log(b);
   }
 };
 export const loadSampleResources = async (resource: any) => {
