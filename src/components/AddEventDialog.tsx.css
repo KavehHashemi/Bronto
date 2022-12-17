@@ -1,0 +1,34 @@
+/* HEADER */
+/* CONTENT */
+.content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.labels {
+  font-size: small !important;
+}
+.fields {
+  background-color: aliceblue;
+}
+
+input[type="text"] {
+  font-size: small;
+}
+
+input[type="number"] {
+  font-size: small;
+}
+.numberfields {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.numberfields > div {
+  font-size: small;
+}
+.numberinputs {
+  width: 5rem;
+  background-color: aliceblue;
+}
+/* ACTIONS */

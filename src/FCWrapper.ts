@@ -36,22 +36,20 @@ export const fetchEvents = async (calendarApi?: CalendarApi) => {
       interactive: true,
     };
     calendarApi?.addEvent(calendarEvent);
-    let resource = await createResource(calendarEvent.resourceId);
-    if (resource) calendarApi?.addResource(resource);
   }
 };
 
-export const createResource = async (resourceId: string | undefined) => {
-  const db = await resourceDB.resources.toArray();
-  let calendarResource: ResourceInput;
-  for (let rsrc in db) {
-    if (db[rsrc].id === resourceId) {
-      console.log("found");
-      calendarResource = { id: resourceId, title: db[rsrc].name };
-      return calendarResource;
-    }
-  }
-};
+// export const createResource = async (resourceId: string | undefined) => {
+//   const db = await resourceDB.resources.toArray();
+//   let calendarResource: ResourceInput;
+//   for (let rsrc in db) {
+//     if (db[rsrc].id === resourceId) {
+//       console.log("found");
+//       calendarResource = { id: resourceId, title: db[rsrc].title };
+//       return calendarResource;
+//     }
+//   }
+// };
 
 export const loadSampleEvents = async (event: any) => {
   let a: EventType = {
@@ -60,7 +58,7 @@ export const loadSampleEvents = async (event: any) => {
     title: event.title,
     description: event.description,
     start: new Date(),
-    end: addHours(2),
+    end: addHours(4),
     operations: [],
   };
   await addEvent(a);
@@ -77,30 +75,16 @@ export const fetchResources = async (calendarApi?: CalendarApi) => {
   let residentResources: number = await resourceDB.resources.count();
   if (residentResources === 0) {
     for (let rsrc in sampleData.resources) {
-      console.log(sampleData.resources[rsrc]);
-      await loadSampleResources(sampleData.resources[rsrc]);
+      await addResource(sampleData.resources[rsrc]);
     }
   }
   const db = await resourceDB.resources.toArray();
 
   for (let rsrc in db) {
-    let calendarResource: ResourceInput = {
-      id: db[rsrc].id,
-      title: db[rsrc].name,
-    };
-    // let a = calendarApi?.addResource(calendarResource);
-    // let b = calendarApi?.getResources();
-    // console.log(a);
-    // console.log(b);
+    calendarApi?.addResource(db[rsrc]);
   }
 };
-export const loadSampleResources = async (resource: any) => {
-  let a: Resource = {
-    id: resource.id,
-    name: resource.name,
-  };
-  await addResource(a);
-};
+
 export const addResource = async (resource: Resource) => {
   await resourceDB.resources.add(resource);
 };

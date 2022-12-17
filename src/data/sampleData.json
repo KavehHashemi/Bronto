@@ -14,11 +14,11 @@
     }
   ],
   "resources": [
-    { "id": "1", "name": "resource 1" },
-    { "id": "2", "name": "resource 2" }
+    { "id": "1", "title": "resource 1" },
+    { "id": "2", "title": "resource 2" }
   ],
   "operations": [
-    { "id": "1", "name": "op. 1" },
-    { "id": "2", "name": "op. 2" }
+    { "id": "1", "title": "op. 1" },
+    { "id": "2", "title": "op. 2" }
   ]
 }
