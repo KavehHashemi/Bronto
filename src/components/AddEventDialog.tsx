@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Data from "../data/sampleData.json";
-import { dialogProps } from "../Types";
+import { addDialogProps, EventType } from "../Types";
+import { addHours } from "../Utils";
+import { v4 as uuid } from "uuid";
 import "./AddEventDialog.tsx.css";
 
 import Dialog from "@mui/material/Dialog";
@@ -14,20 +16,16 @@ import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import InputLabel from "@mui/material/InputLabel";
-import { EventType } from "@testing-library/react";
-import { title } from "process";
 
 const AddEventDialog = ({
   open,
   openHandler,
-  event,
-  setEvent,
-}: dialogProps) => {
+  resourceId,
+  start,
+}: addDialogProps) => {
   const ops = Data.operations;
-  const titleRef = useRef<HTMLInputElement>(null);
-  const descriptionRef = useRef<HTMLInputElement>(null);
-  const operationsRef = useRef<string[]>([]);
-
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [operations, setOperations] = useState<string[]>([]);
   const [minutes, setMinutes] = useState<string>("0");
   const [hours, setHours] = useState<string>("0");
@@ -36,28 +34,37 @@ const AddEventDialog = ({
       target: { value },
     } = event;
     setOperations(typeof value === "string" ? value.split(",") : value);
-    //setEvent({ ...event, operations: operations });
   };
 
+  const [eventStart, setEventStart] = useState<Date>();
+  const [eventEnd, setEventEnd] = useState<Date>();
+
+  const getDuration = () => {
+    const duration: number =
+      (minutes as unknown as number) + (hours as unknown as number) * 60;
+    setEventStart(start);
+    setEventEnd(addHours(4, start));
+  };
+
+  const [event, setEvent] = useState<EventType>();
+
   const addEvent = () => {
-    setEvent({
-      id: event.id,
-      title: titleRef.current?.value || "",
-      description: descriptionRef.current?.value || "",
-      resourceId: event.resourceId,
-      operations: operations,
-      start: event.start,
-      end: event.end,
-    });
+    getDuration();
+    //console.log(event);
   };
 
   useEffect(() => {
-    console.log(event);
-  }, [event]);
+    console.log(eventStart);
+    console.log(eventEnd);
+  }, [eventStart, eventEnd]);
 
   return (
     <Dialog fullWidth open={open} onClose={() => openHandler("date", false)}>
-      <Header>Add New Event to {event?.resourceId}</Header>
+      <Header>
+        <>
+          Add New Event to {resourceId} at {start.getHours()}
+        </>
+      </Header>
       <Content className="content-container">
         <InputLabel className="labels">Title</InputLabel>
         <TextField
@@ -65,9 +72,9 @@ const AddEventDialog = ({
           variant="outlined"
           size="small"
           placeholder="Event Title"
-          ref={titleRef}
-          // value={event?.title}
-          // onChange={(e) => setEvent({ ...event, title: e.target.value })}
+          value={title}
+          //onChange={(e) => setEvent({ ...event, title: e.target.value })}
+          onChange={(e) => setTitle(e.target.value)}
         ></TextField>
         <InputLabel className="labels">Description</InputLabel>
         <TextField
@@ -75,9 +82,9 @@ const AddEventDialog = ({
           variant="outlined"
           size="small"
           placeholder="Event Description"
-          ref={descriptionRef}
-          // value={event?.description}
+          value={description}
           // onChange={(e) => setEvent({ ...event, description: e.target.value })}
+          onChange={(e) => setDescription(e.target.value)}
         ></TextField>
         <InputLabel className="labels">Operations</InputLabel>
         <Select
@@ -85,13 +92,11 @@ const AddEventDialog = ({
           className="fields"
           variant="outlined"
           size="small"
-          ref={operationsRef}
-          value={event?.operations}
+          value={operations}
           onChange={handleChange}
           placeholder="Operations"
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-              {/* <Box> */}
               {selected.map((value) => (
                 <Chip key={value} label={value} />
               ))}
@@ -132,7 +137,14 @@ const AddEventDialog = ({
         >
           Cancel
         </Button>
-        <Button color="primary" variant="text" onClick={addEvent}>
+        <Button
+          color="primary"
+          variant="text"
+          onClick={() => {
+            addEvent();
+            openHandler("date", false);
+          }}
+        >
           Add
         </Button>
       </Actions>

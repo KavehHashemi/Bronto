@@ -1,6 +1,7 @@
 /* eslint-disable array-callback-return */
 import FullCalendar, {
   CalendarApi,
+  EventApi,
   EventClickArg,
   EventDropArg,
 } from "@fullcalendar/react";
@@ -35,20 +36,18 @@ const CalendarComponent = () => {
     date: false,
   });
 
+  ///AddEventDialog Parameters
+  const [resourceId, setResourceId] = useState<string>("");
+  const [start, setStart] = useState<Date>(new Date());
+  ///EditEventDialog Paramater
+  const [passedEvent, setPassedEvent] = useState<EventType>();
+
   const handleShowDialog = (id: string, show: boolean) => {
     setOpenDialog({ ...openDialog, [id]: show });
   };
 
   const format: string = "YYYY/M/D HH:mm";
-  const [event, setEvent] = useState<EventType>({
-    id: "",
-    title: "",
-    description: "",
-    resourceId: "",
-    operations: [],
-    start: new Date(),
-    end: addHours(1),
-  });
+
   const [eventDuration, setEventDuration] = useState<Duration>({
     hours: 0,
     minutes: 0,
@@ -61,26 +60,31 @@ const CalendarComponent = () => {
   // const fetchResources = () => {};
   const fetchOperations = () => {};
 
-  const createCurrentEvent = (resourceId: string, start: Date) => {
-    setEvent({
-      id: uuid(),
-      title: "",
-      description: "",
-      operations: [],
-      resourceId: resourceId,
-      start: start,
-      end: addHours(1, start),
+  const createCurrentEvent = (event: EventApi) => {
+    setPassedEvent({
+      id: event.id,
+      title: event.title,
+      description: event.extendedProps.description,
+      operations: event.extendedProps.operations,
+      resourceId: event.getResources()[0].id,
+      start: event.start || new Date(),
+      end: event.end || new Date(),
     });
   };
 
   const onDateClick = (e: DateClickArg) => {
-    console.log(e.date);
-    if (e.resource) createCurrentEvent(e.resource.id, e.date);
+    // console.log(e);
+    //if (e.resource) createCurrentEvent(e.resource.id, e.date);
+    if (e.resource) setResourceId(e.resource.id);
+    setStart(e.date);
     handleShowDialog("date", true);
-    AddEvent();
+    //AddEvent();
   };
+
   const onEventClick = (e: EventClickArg) => {
     console.log(e.event.title);
+    createCurrentEvent(e.event);
+    //setPassedEvent(e.event);
     handleShowDialog("event", true);
   };
   const onDrop = (e: EventDropArg) => {
@@ -90,18 +94,18 @@ const CalendarComponent = () => {
   const onResize = (e: EventResizeDoneArg) => {
     console.log(e.startDelta);
     console.log(e.endDelta);
-    EditEvent();
+    //EditEvent();
   };
 
-  const AddEvent = () => {};
-  const EditEvent = () => {};
-  const DeleteEvent = () => {};
+  // const AddEvent = () => {};
+  // const EditEvent = () => {};
+  // const DeleteEvent = () => {};
 
-  const AddResource = () => {};
-  const EditResource = () => {};
-  const DeleteResource = () => {};
+  // const AddResource = () => {};
+  // const EditResource = () => {};
+  // const DeleteResource = () => {};
 
-  const RearrangeEvents = () => {};
+  // const RearrangeEvents = () => {};
 
   return (
     <>
@@ -135,14 +139,17 @@ const CalendarComponent = () => {
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
       />
       <AddEventDialog
-        event={event}
-        setEvent={setEvent}
+        // event={event}
+        // setEvent={setEvent}
+        resourceId={resourceId}
+        start={start}
         open={openDialog.date}
         openHandler={handleShowDialog}
       ></AddEventDialog>
       <EditEventDialog
-        event={event}
-        setEvent={setEvent}
+        // event={event}
+        // setEvent={setEvent}
+        event={passedEvent}
         open={openDialog.event}
         openHandler={handleShowDialog}
       ></EditEventDialog>
