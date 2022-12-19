@@ -69,7 +69,7 @@ const AddEventDialog = ({
     // console.log(event?.end);
     (async () => {
       if (event !== undefined) await addEventToDB(event);
-      calendarApi?.addEvent();
+      //calendarApi?.addEvent();
     })();
     //console.log(event);
   }, [event]);
