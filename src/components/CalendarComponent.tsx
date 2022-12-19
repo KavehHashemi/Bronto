@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 import FullCalendar, {
   CalendarApi,
@@ -25,16 +26,15 @@ import { addHours } from "../Utils";
 const CalendarComponent = () => {
   const calendarRef = useRef<FullCalendar>(null);
 
+  const [openDialog, setOpenDialog] = useState<ShowDialog>({
+    event: false,
+    date: false,
+  });
   useEffect(() => {
     let calendarApi = calendarRef.current?.getApi();
     fetchResources(calendarApi);
     fetchEvents(calendarApi);
   }, [calendarRef]);
-
-  const [openDialog, setOpenDialog] = useState<ShowDialog>({
-    event: false,
-    date: false,
-  });
 
   ///AddEventDialog Parameters
   const [resourceId, setResourceId] = useState<string>("");
@@ -46,19 +46,19 @@ const CalendarComponent = () => {
     setOpenDialog({ ...openDialog, [id]: show });
   };
 
-  const format: string = "YYYY/M/D HH:mm";
+  //const format: string = "YYYY/M/D HH:mm";
 
-  const [eventDuration, setEventDuration] = useState<Duration>({
-    hours: 0,
-    minutes: 0,
-  });
-  const defaultGap = 1;
+  // const [eventDuration, setEventDuration] = useState<Duration>({
+  //   hours: 0,
+  //   minutes: 0,
+  // });
+  //const defaultGap = 1;
 
   const plugins = [resourceTimelinePlugin, interactionPlugin];
   const [resources, setResources] = useState<Resource[]>([]);
   //const fetchEvents = () => {};
   // const fetchResources = () => {};
-  const fetchOperations = () => {};
+  //const fetchOperations = () => {};
 
   const createCurrentEvent = (event: EventApi) => {
     setPassedEvent({
@@ -139,12 +139,11 @@ const CalendarComponent = () => {
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
       />
       <AddEventDialog
-        // event={event}
-        // setEvent={setEvent}
         resourceId={resourceId}
         start={start}
         open={openDialog.date}
         openHandler={handleShowDialog}
+        calendarRef={calendarRef}
       ></AddEventDialog>
       <EditEventDialog
         // event={event}

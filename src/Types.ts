@@ -1,4 +1,4 @@
-import { EventApi } from "@fullcalendar/react";
+import FullCalendar, { CalendarApi, EventApi } from "@fullcalendar/react";
 
 export type EventType = {
   id: string;
@@ -25,7 +25,7 @@ export type ShowDialog = {
 };
 export type Duration = {
   hours: number;
-  minutes: 0 | 30;
+  minutes: number;
 };
 
 export type addDialogProps = {
@@ -33,6 +33,7 @@ export type addDialogProps = {
   openHandler: (id: string, show: boolean) => void;
   resourceId: string;
   start: Date;
+  calendarRef: React.RefObject<FullCalendar>;
   // event: EventType;
   // setEvent: (event: EventType) => void;
 };

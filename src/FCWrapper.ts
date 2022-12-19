@@ -35,6 +35,7 @@ export const fetchEvents = async (calendarApi?: CalendarApi) => {
       startEditable: true,
       interactive: true,
     };
+
     calendarApi?.addEvent(calendarEvent);
   }
 };
@@ -61,10 +62,10 @@ export const loadSampleEvents = async (event: any) => {
     end: addHours(4),
     operations: [],
   };
-  await addEvent(a);
+  await addEventToDB(a);
 };
 
-export const addEvent = async (event: EventType) => {
+export const addEventToDB = async (event: EventType) => {
   await eventsDB.events.add(event);
 };
 export const editEvent = async () => {};
