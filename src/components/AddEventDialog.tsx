@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import Data from "../data/sampleData.json";
-import { addDialogProps, EventType } from "../Types";
-import { addHours } from "../Utils";
+import { addDialogProps, Duration, EventType } from "../Types";
+import { addDuration } from "../Utils";
 import { v4 as uuid } from "uuid";
 import "./AddEventDialog.tsx.css";
 
@@ -16,19 +17,21 @@ import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import InputLabel from "@mui/material/InputLabel";
+import { addEventToDB, fetchEvents } from "../FCWrapper";
 
 const AddEventDialog = ({
   open,
   openHandler,
   resourceId,
   start,
+  calendarRef,
 }: addDialogProps) => {
   const ops = Data.operations;
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [operations, setOperations] = useState<string[]>([]);
-  const [minutes, setMinutes] = useState<string>("0");
-  const [hours, setHours] = useState<string>("0");
+  const [duration, setDuration] = useState<Duration>({ hours: 0, minutes: 0 });
+
   const handleChange = (event: SelectChangeEvent<typeof operations>) => {
     const {
       target: { value },
@@ -36,27 +39,50 @@ const AddEventDialog = ({
     setOperations(typeof value === "string" ? value.split(",") : value);
   };
 
-  const [eventStart, setEventStart] = useState<Date>();
-  const [eventEnd, setEventEnd] = useState<Date>();
-
-  const getDuration = () => {
-    const duration: number =
-      (minutes as unknown as number) + (hours as unknown as number) * 60;
-    setEventStart(start);
-    setEventEnd(addHours(4, start));
-  };
-
   const [event, setEvent] = useState<EventType>();
 
-  const addEvent = () => {
-    getDuration();
-    //console.log(event);
+  const addEvent = async () => {
+    setEvent({
+      id: uuid(),
+      title: title,
+      description: description,
+      resourceId: resourceId,
+      operations: operations,
+      start: new Date(start),
+      end: new Date(addDuration(duration.hours, duration.minutes, start)),
+    });
+    // if (event !== undefined) {
+    //   console.log("event is defined");
+    //   let calendarApi = calendarRef.current?.getApi();
+    //   await addEventToDB(event);
+    //   await fetchEvents(calendarApi);
+    // } else {
+    //   console.log("event is undefined");
+    // }
   };
 
+  let calendarApi = calendarRef.current?.getApi();
   useEffect(() => {
-    console.log(eventStart);
-    console.log(eventEnd);
-  }, [eventStart, eventEnd]);
+    // console.log("event.start");
+    // console.log(event?.start);
+    // console.log("event.end");
+    // console.log(event?.end);
+    (async () => {
+      if (event !== undefined) await addEventToDB(event);
+      calendarApi?.addEvent();
+    })();
+    //console.log(event);
+  }, [event]);
+
+  const minutesInputProps = {
+    step: 15,
+    min: 0,
+    max: 45,
+  };
+  const hoursInputProps = {
+    min: 0,
+    max: 999,
+  };
 
   return (
     <Dialog fullWidth open={open} onClose={() => openHandler("date", false)}>
@@ -73,7 +99,6 @@ const AddEventDialog = ({
           size="small"
           placeholder="Event Title"
           value={title}
-          //onChange={(e) => setEvent({ ...event, title: e.target.value })}
           onChange={(e) => setTitle(e.target.value)}
         ></TextField>
         <InputLabel className="labels">Description</InputLabel>
@@ -83,7 +108,6 @@ const AddEventDialog = ({
           size="small"
           placeholder="Event Description"
           value={description}
-          // onChange={(e) => setEvent({ ...event, description: e.target.value })}
           onChange={(e) => setDescription(e.target.value)}
         ></TextField>
         <InputLabel className="labels">Operations</InputLabel>
@@ -112,19 +136,33 @@ const AddEventDialog = ({
         <InputLabel className="labels">Duration</InputLabel>
         <div className="numberfields">
           <TextField
+            inputProps={hoursInputProps}
             type="number"
             size="small"
             className="numberinputs"
-            value={hours}
-            onChange={(e) => setHours(e.target.value)}
+            value={duration.hours}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              if (e.target.checkValidity()) {
+                setDuration({ ...duration, hours: e.target.valueAsNumber | 0 });
+              }
+            }}
           ></TextField>
           <div>hours</div>
+
           <TextField
-            type="number"
+            inputProps={minutesInputProps}
+            type={"number"}
             size="small"
             className="numberinputs"
-            value={minutes}
-            onChange={(e) => setMinutes(e.target.value)}
+            value={duration.minutes}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              if (e.target.checkValidity()) {
+                setDuration({
+                  ...duration,
+                  minutes: e.target.valueAsNumber | 0,
+                });
+              }
+            }}
           ></TextField>
           <div>minutes</div>
         </div>
