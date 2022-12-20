@@ -38,8 +38,9 @@ export type addDialogProps = {
   // setEvent: (event: EventType) => void;
 };
 
-export type editDialofProps = {
+export type editDialogProps = {
   open: boolean;
   openHandler: (id: string, show: boolean) => void;
-  event: EventType | undefined;
+  event: EventApi | undefined;
+  calendarRef: React.RefObject<FullCalendar>;
 };

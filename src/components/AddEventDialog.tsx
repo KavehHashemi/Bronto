@@ -4,7 +4,7 @@ import Data from "../data/sampleData.json";
 import { addDialogProps, Duration, EventType } from "../Types";
 import { addDuration } from "../Utils";
 import { v4 as uuid } from "uuid";
-import "./AddEventDialog.tsx.css";
+import "./EventDialog.css";
 
 import Dialog from "@mui/material/Dialog";
 import Header from "@mui/material/DialogTitle";
@@ -32,7 +32,9 @@ const AddEventDialog = ({
   const [operations, setOperations] = useState<string[]>([]);
   const [duration, setDuration] = useState<Duration>({ hours: 0, minutes: 0 });
 
-  const handleChange = (event: SelectChangeEvent<typeof operations>) => {
+  const handleOperationChange = (
+    event: SelectChangeEvent<typeof operations>
+  ) => {
     const {
       target: { value },
     } = event;
@@ -68,8 +70,11 @@ const AddEventDialog = ({
     // console.log("event.end");
     // console.log(event?.end);
     (async () => {
-      if (event !== undefined) await addEventToDB(event);
-      //calendarApi?.addEvent();
+      if (event !== undefined) {
+        calendarApi?.addEvent(event);
+        await addEventToDB(event);
+      }
+      // calendarApi?.;
     })();
     //console.log(event);
   }, [event]);
@@ -117,7 +122,7 @@ const AddEventDialog = ({
           variant="outlined"
           size="small"
           value={operations}
-          onChange={handleChange}
+          onChange={handleOperationChange}
           placeholder="Operations"
           renderValue={(selected) => (
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>

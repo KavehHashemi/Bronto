@@ -8,14 +8,25 @@ import { ResourceInput } from "@fullcalendar/resource-common";
 import { resourceDB } from "./indexedDb/ResourcesDB";
 
 ///EVENTS
-export const fetchEvents = async (calendarApi?: CalendarApi) => {
+
+export const checkDB = async () => {
   let residentEvents: number = await eventsDB.events.count();
   if (residentEvents === 0) {
     for (let ev in sampleData.events) {
       loadSampleEvents(sampleData.events[ev]);
     }
   }
+};
+
+export const addEventsToCalendar = async (calendarApi: CalendarApi) => {
   const db = await eventsDB.events.toArray();
+  // const residentEvents = calendarApi?.getEvents();
+  // for (let ev in residentEvents) {
+  //   if(residentEvents[ev].id!==db[]){
+
+  //   }
+  // }
+  console.log(db);
   for (let ev in db) {
     let calendarEvent: EventInput = {
       id: db[ev].id,
@@ -40,6 +51,43 @@ export const fetchEvents = async (calendarApi?: CalendarApi) => {
   }
 };
 
+export const addNewEventToCalendar = async () => {
+  //const db = await eventsDB.events.
+};
+export const fetchEvents = async (calendarApi: CalendarApi) => {
+  await checkDB();
+  await addEventsToCalendar(calendarApi);
+  // let residentEvents: number = await eventsDB.events.count();
+  // if (residentEvents === 0) {
+  //   for (let ev in sampleData.events) {
+  //     loadSampleEvents(sampleData.events[ev]);
+  //   }
+  // }
+  // const db = await eventsDB.events.toArray();
+  // for (let ev in db) {
+  //   let calendarEvent: EventInput = {
+  //     id: db[ev].id,
+  //     title: db[ev].title,
+  //     start: db[ev].start,
+  //     end: db[ev].end,
+  //     resourceId: db[ev].resourceId,
+  //     extendedProps: {
+  //       description: db[ev].description,
+  //       operations: db[ev].operations,
+  //     },
+  //     allDay: false,
+  //     durationEditable: true,
+  //     overlap: false,
+  //     resourceEditable: false,
+  //     editable: true,
+  //     startEditable: true,
+  //     interactive: true,
+  //   };
+
+  //   calendarApi?.addEvent(calendarEvent);
+  // }
+};
+
 // export const createResource = async (resourceId: string | undefined) => {
 //   const db = await resourceDB.resources.toArray();
 //   let calendarResource: ResourceInput;
@@ -62,6 +110,7 @@ export const loadSampleEvents = async (event: any) => {
     end: addHours(4),
     operations: [],
   };
+
   await addEventToDB(a);
 };
 
