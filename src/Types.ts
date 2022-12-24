@@ -31,16 +31,16 @@ export type Duration = {
 export type addDialogProps = {
   open: boolean;
   openHandler: (id: string, show: boolean) => void;
-  resourceId: string;
-  start: Date;
+  // resourceId: string;
+  // start: Date;
   calendarRef: React.RefObject<FullCalendar>;
-  // event: EventType;
+  event: EventType | undefined;
   // setEvent: (event: EventType) => void;
 };
 
 export type editDialogProps = {
   open: boolean;
   openHandler: (id: string, show: boolean) => void;
-  event: EventApi | undefined;
+  event: EventType | undefined;
   calendarRef: React.RefObject<FullCalendar>;
 };

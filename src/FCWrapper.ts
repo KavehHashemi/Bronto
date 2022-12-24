@@ -1,13 +1,61 @@
 import { v4 as uuid } from "uuid";
 import { eventsDB } from "./indexedDb/EventsDB";
 import { EventType, Resource } from "./Types";
-import { addHours } from "./Utils";
+import { addDuration, addHours } from "./Utils";
 import sampleData from "./data/sampleData.json";
-import { CalendarApi, EventInput } from "@fullcalendar/react";
+import { CalendarApi, EventApi, EventInput } from "@fullcalendar/react";
 import { ResourceInput } from "@fullcalendar/resource-common";
 import { resourceDB } from "./indexedDb/ResourcesDB";
+import { DateClickArg } from "@fullcalendar/interaction";
 
 ///EVENTS
+
+export const createEventTypeFromEventApi = (eventApi: EventApi): EventType => {
+  let eventType: EventType = {
+    id: eventApi.id,
+    title: eventApi.title,
+    description: eventApi.extendedProps.description,
+    resourceId: eventApi.getResources()[0].id,
+    operations: eventApi.extendedProps.operations,
+    start: eventApi.start || new Date(),
+    end: eventApi.end || new Date(),
+  };
+
+  return eventType;
+};
+
+export const createEventTypeFromDateClick = (
+  dateClick: DateClickArg
+): EventType => {
+  let eventType: EventType = {
+    id: uuid(),
+    title: "",
+    description: "",
+    resourceId: dateClick.resource?.id || "-1",
+    operations: [],
+    start: new Date(dateClick.dateStr),
+    end: new Date(addDuration(1, 0, dateClick.date)),
+  };
+  return eventType;
+};
+
+export const createEventInputFromEventType = (
+  eventType: EventType
+): EventInput => {
+  //let eventApi: EventApi = {
+  let eventApi: EventInput = {
+    id: eventType.id,
+    title: eventType.title,
+    resourceId: eventType.resourceId,
+    extendedProps: {
+      description: eventType.description,
+      operations: eventType.operations,
+    },
+    start: eventType.start,
+    end: eventType.end,
+  };
+  return eventApi;
+};
 
 export const checkDB = async () => {
   let residentEvents: number = await eventsDB.events.count();

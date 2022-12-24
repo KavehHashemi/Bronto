@@ -1,10 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect } from "react";
+import FullCalendar from "@fullcalendar/react";
+import React, { useState, useEffect } from "react";
+import { Duration, EventType } from "../Types";
 import Data from "../data/sampleData.json";
-import { addDialogProps, Duration, EventType } from "../Types";
-import { addDuration } from "../Utils";
-import { v4 as uuid } from "uuid";
-import "./EventDialog.css";
 
 import Dialog from "@mui/material/Dialog";
 import Header from "@mui/material/DialogTitle";
@@ -17,19 +14,24 @@ import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import InputLabel from "@mui/material/InputLabel";
-import { addEventToDB, fetchEvents } from "../FCWrapper";
+import { addDuration } from "../Utils";
+import { addEventToDB } from "../FCWrapper";
 
-const AddEventDialog = ({
+type dialogProps = {
+  open: boolean;
+  openHandler: (id: string, show: boolean) => void;
+  calendarRef: React.RefObject<FullCalendar>;
+  event: EventType;
+};
+
+const EventDialog = ({
   open,
   openHandler,
-  // resourceId,
-  // start,
-  event,
   calendarRef,
-}: addDialogProps) => {
+  event,
+}: dialogProps) => {
   const ops = Data.operations;
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [currentEvent, setCurrentEvent] = useState(event);
   const [operations, setOperations] = useState<string[]>([]);
   const [duration, setDuration] = useState<Duration>({ hours: 0, minutes: 0 });
 
@@ -42,46 +44,26 @@ const AddEventDialog = ({
     setOperations(typeof value === "string" ? value.split(",") : value);
   };
 
-  const [createdEvent, setCreatedEvent] = useState<EventType>();
-
   const addEvent = async () => {
-    if (event)
-      setCreatedEvent({
-        id: uuid(),
-        title: title,
-        description: description,
-        resourceId: event?.resourceId,
-        operations: operations,
-        start: new Date(event.start),
-        end: new Date(
-          addDuration(duration.hours, duration.minutes, event.start)
-        ),
-      });
-    // if (event !== undefined) {
-    //   console.log("event is defined");
-    //   let calendarApi = calendarRef.current?.getApi();
-    //   await addEventToDB(event);
-    //   await fetchEvents(calendarApi);
-    // } else {
-    //   console.log("event is undefined");
-    // }
+    setCurrentEvent({
+      ...currentEvent,
+      id: event.id,
+      resourceId: event.resourceId,
+      operations: operations,
+      start: new Date(event.start),
+      end: new Date(addDuration(duration.hours, duration.minutes, event.start)),
+    });
+    let calendarApi = calendarRef.current?.getApi();
+    calendarApi?.addEvent(event);
+    await addEventToDB(event);
   };
 
-  let calendarApi = calendarRef.current?.getApi();
-  useEffect(() => {
-    // console.log("event.start");
-    // console.log(event?.start);
-    // console.log("event.end");
-    // console.log(event?.end);
-    (async () => {
-      if (event !== undefined) {
-        calendarApi?.addEvent(event);
-        await addEventToDB(event);
-      }
-      // calendarApi?.;
-    })();
-    //console.log(event);
-  }, [event]);
+  //   useEffect(() => {
+  //     (async () => {
+  //       if (event !== undefined) {
+  //       }
+  //     })();
+  //   }, [event]);
 
   const minutesInputProps = {
     step: 15,
@@ -107,8 +89,10 @@ const AddEventDialog = ({
           variant="outlined"
           size="small"
           placeholder="Event Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={currentEvent.title}
+          onChange={(e) =>
+            setCurrentEvent({ ...currentEvent, title: e.target.value })
+          }
         ></TextField>
         <InputLabel className="labels">Description</InputLabel>
         <TextField
@@ -116,8 +100,10 @@ const AddEventDialog = ({
           variant="outlined"
           size="small"
           placeholder="Event Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={currentEvent.description}
+          onChange={(e) =>
+            setCurrentEvent({ ...currentEvent, description: e.target.value })
+          }
         ></TextField>
         <InputLabel className="labels">Operations</InputLabel>
         <Select
@@ -125,7 +111,7 @@ const AddEventDialog = ({
           className="fields"
           variant="outlined"
           size="small"
-          value={operations}
+          value={currentEvent.operations}
           onChange={handleOperationChange}
           placeholder="Operations"
           renderValue={(selected) => (
@@ -199,4 +185,4 @@ const AddEventDialog = ({
   );
 };
 
-export default AddEventDialog;
+export default EventDialog;

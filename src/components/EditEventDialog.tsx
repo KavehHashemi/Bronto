@@ -44,12 +44,12 @@ const EditEventDialog = ({
     if (event)
       setEditedEvent({
         id: event.id,
-        title: title,
-        description: description,
-        resourceId: event.getResources()[0].id,
-        operations: operations,
-        start: event.start || new Date(),
-        end: event.end || new Date(),
+        title: event.title,
+        description: event.description,
+        resourceId: event.resourceId,
+        operations: event.operations,
+        start: event.start,
+        end: event.end,
       });
   };
   let calendarApi = calendarRef.current?.getApi();
@@ -72,7 +72,7 @@ const EditEventDialog = ({
     max: 999,
   };
   return (
-    <Dialog fullWidth open={open} onClose={() => openHandler("event", false)}>
+    <Dialog fullWidth open={open} onClose={() => openHandler("date", false)}>
       <Header>
         <>Edit {event?.title}</>
       </Header>
@@ -92,7 +92,7 @@ const EditEventDialog = ({
           variant="outlined"
           size="small"
           placeholder="Event Description"
-          value={event?.extendedProps.description}
+          value={event?.description}
           onChange={(e) => setDescription(e.target.value)}
         ></TextField>
         <InputLabel className="labels">Operations</InputLabel>
@@ -101,7 +101,7 @@ const EditEventDialog = ({
           className="fields"
           variant="outlined"
           size="small"
-          value={event?.extendedProps.operations}
+          value={event?.operations}
           onChange={handleOperationChange}
           placeholder="Operations"
           renderValue={(selected) => (
