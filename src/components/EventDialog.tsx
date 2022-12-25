@@ -2,6 +2,7 @@ import FullCalendar from "@fullcalendar/react";
 import React, { useState, useEffect } from "react";
 import { Duration, EventType } from "../Types";
 import Data from "../data/sampleData.json";
+import "./EventDialog.css";
 
 import Dialog from "@mui/material/Dialog";
 import Header from "@mui/material/DialogTitle";
@@ -32,8 +33,12 @@ const EventDialog = ({
 }: dialogProps) => {
   const ops = Data.operations;
   const [currentEvent, setCurrentEvent] = useState(event);
-  const [operations, setOperations] = useState<string[]>([]);
+  const [operations, setOperations] = useState<string[]>(event.operations);
   const [duration, setDuration] = useState<Duration>({ hours: 0, minutes: 0 });
+
+const calculateEventsDuration = ()=>{
+  let dur = event.end -event.start
+}
 
   const handleOperationChange = (
     event: SelectChangeEvent<typeof operations>
@@ -76,7 +81,11 @@ const EventDialog = ({
   };
 
   return (
-    <Dialog fullWidth open={open} onClose={() => openHandler("date", false)}>
+    <Dialog
+      fullWidth
+      open={open}
+      onClose={() => openHandler("eventDialog", false)}
+    >
       <Header>
         <>
           Add New Event to {event?.resourceId} at {event?.start.getHours()}
@@ -166,7 +175,7 @@ const EventDialog = ({
         <Button
           color="inherit"
           variant="text"
-          onClick={() => openHandler("date", false)}
+          onClick={() => openHandler("eventDialog", false)}
         >
           Cancel
         </Button>
@@ -175,7 +184,7 @@ const EventDialog = ({
           variant="text"
           onClick={() => {
             addEvent();
-            openHandler("date", false);
+            openHandler("eventDialog", false);
           }}
         >
           Add

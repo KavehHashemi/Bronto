@@ -36,6 +36,7 @@ const CalendarComponent = () => {
   const [openDialog, setOpenDialog] = useState<ShowDialog>({
     event: false,
     date: false,
+    eventDialog: false,
   });
   useEffect(() => {
     let calendarApi = calendarRef.current?.getApi();
@@ -87,7 +88,7 @@ const CalendarComponent = () => {
     setPassedEvent(createEventTypeFromDateClick(e));
     // if (e.resource) setResourceId(e.resource.id);
     // setStart(e.date);
-    handleShowDialog("date", true);
+    handleShowDialog("eventDialog", true);
     //AddEvent();
   };
 
@@ -96,7 +97,7 @@ const CalendarComponent = () => {
     setPassedEvent(createEventTypeFromEventApi(e.event));
     //createCurrentEvent(e.event);
     //setPassedEvent(e.event);
-    handleShowDialog("event", true);
+    handleShowDialog("eventDialog", true);
   };
   const onDrop = (e: EventDropArg) => {
     console.log(e.delta);
@@ -167,7 +168,7 @@ const CalendarComponent = () => {
       ></EditEventDialog> */}
       <EventDialog
         event={passedEvent}
-        open={openDialog.date}
+        open={openDialog.eventDialog}
         openHandler={handleShowDialog}
         calendarRef={calendarRef}
       ></EventDialog>
