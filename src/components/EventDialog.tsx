@@ -32,13 +32,22 @@ const EventDialog = ({
   event,
 }: dialogProps) => {
   const ops = Data.operations;
-  const [currentEvent, setCurrentEvent] = useState(event);
+  const [currentEvent, setCurrentEvent] = useState<EventType>(event);
   const [operations, setOperations] = useState<string[]>(event.operations);
   const [duration, setDuration] = useState<Duration>({ hours: 0, minutes: 0 });
 
-const calculateEventsDuration = ()=>{
-  let dur = event.end -event.start
-}
+  const calculateEventsDuration = () => {
+    // let dur = event.end -event.start
+  };
+
+  const getRandomColor = () => {
+    let letters = "0123456789ABCDEF";
+    let color = "#";
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
 
   const handleOperationChange = (
     event: SelectChangeEvent<typeof operations>
@@ -60,6 +69,7 @@ const calculateEventsDuration = ()=>{
     });
     let calendarApi = calendarRef.current?.getApi();
     calendarApi?.addEvent(event);
+
     await addEventToDB(event);
   };
 

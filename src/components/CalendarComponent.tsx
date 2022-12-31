@@ -78,9 +78,9 @@ const CalendarComponent = () => {
   // const fetchResources = () => {};
   //const fetchOperations = () => {};
 
-  const createCurrentEvent = (event: EventApi) => {
-    setPassedEvent(createEventTypeFromEventApi(event));
-  };
+  // const createCurrentEvent = (event: EventApi) => {
+  //   setPassedEvent(createEventTypeFromEventApi(event));
+  // };
 
   const onDateClick = (e: DateClickArg) => {
     console.log(e);
