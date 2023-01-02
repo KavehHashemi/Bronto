@@ -1,14 +1,18 @@
-export const addHours = (hours: number, time?: Date) => {
+export const addHours = (hours: number, time?: Date): Date => {
   const newTime = time ? time : new Date(Date.now());
   newTime.setHours(newTime.getHours() + hours);
   return newTime;
 };
-export const addMinutes = (minutes: number, time?: Date) => {
+export const addMinutes = (minutes: number, time?: Date): Date => {
   const newTime = time ? time : new Date(Date.now());
   newTime.setMinutes(newTime.getMinutes() + minutes);
   return newTime;
 };
-export const addDuration = (hours: number, minutes: number, time?: Date) => {
+export const addDuration = (
+  hours: number,
+  minutes: number,
+  time?: Date
+): Date => {
   const newTime = time ? time : new Date(Date.now());
   newTime.setHours(newTime.getHours() + hours);
   newTime.setMinutes(newTime.getMinutes() + minutes);

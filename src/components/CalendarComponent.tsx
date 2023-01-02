@@ -27,7 +27,7 @@ import { eventsDB } from "../indexedDb/EventsDB";
 import { resourceDB } from "../indexedDb/ResourcesDB";
 import AddEventDialog from "./AddEventDialog";
 import EditEventDialog from "./EditEventDialog";
-import { addHours } from "../Utils";
+import { addDuration, addHours } from "../Utils";
 import EventDialog from "./EventDialog";
 
 const CalendarComponent = () => {
@@ -41,7 +41,7 @@ const CalendarComponent = () => {
   useEffect(() => {
     let calendarApi = calendarRef.current?.getApi();
     fetchResources(calendarApi);
-    if (calendarApi) fetchEvents(calendarApi);
+    fetchEvents(calendarApi);
   }, [calendarRef]);
 
   ///AddEventDialog Parameters
@@ -50,15 +50,6 @@ const CalendarComponent = () => {
   // const [start, setStart] = useState<Date>(new Date());
 
   ///EditEventDialog Paramater
-  const [passedEvent, setPassedEvent] = useState<EventType>({
-    id: "",
-    title: "",
-    resourceId: "",
-    description: "",
-    operations: [],
-    start: new Date(),
-    end: new Date(),
-  });
 
   const handleShowDialog = (id: string, show: boolean) => {
     setOpenDialog({ ...openDialog, [id]: show });
@@ -81,22 +72,26 @@ const CalendarComponent = () => {
   // const createCurrentEvent = (event: EventApi) => {
   //   setPassedEvent(createEventTypeFromEventApi(event));
   // };
+  const [isNew, setIsNew] = useState<boolean>(true);
+  const [currentEvent, setCurrentEvent] = useState<EventType>({
+    id: uuid(),
+    title: "",
+    resourceId: "-1",
+    description: "",
+    operations: [],
+    start: new Date(),
+    end: addDuration(1, 0, new Date()),
+  });
 
   const onDateClick = (e: DateClickArg) => {
-    console.log(e);
-    //if (e.resource) createCurrentEvent(e.resource.id, e.date);
-    setPassedEvent(createEventTypeFromDateClick(e));
-    // if (e.resource) setResourceId(e.resource.id);
-    // setStart(e.date);
+    setCurrentEvent(createEventTypeFromDateClick(e));
+    setIsNew(true);
     handleShowDialog("eventDialog", true);
-    //AddEvent();
   };
 
   const onEventClick = (e: EventClickArg) => {
-    console.log(e);
-    setPassedEvent(createEventTypeFromEventApi(e.event));
-    //createCurrentEvent(e.event);
-    //setPassedEvent(e.event);
+    setCurrentEvent(createEventTypeFromEventApi(e.event));
+    setIsNew(false);
     handleShowDialog("eventDialog", true);
   };
   const onDrop = (e: EventDropArg) => {
@@ -167,10 +162,11 @@ const CalendarComponent = () => {
         calendarRef={calendarRef}
       ></EditEventDialog> */}
       <EventDialog
-        event={passedEvent}
+        event={currentEvent}
         open={openDialog.eventDialog}
         openHandler={handleShowDialog}
         calendarRef={calendarRef}
+        isNew={isNew}
       ></EventDialog>
     </>
   );

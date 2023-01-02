@@ -18,6 +18,7 @@
     "@types/react-dom": "^18.0.9",
     "dexie": "^3.2.2",
     "dexie-react-hooks": "^1.1.1",
+    "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
