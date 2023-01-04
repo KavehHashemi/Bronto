@@ -1,3 +1,8 @@
+.header-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 input[type="text"] {
   font-size: small;
 }
@@ -16,6 +21,15 @@ input[type="text"] {
   display: flex;
   justify-content: space-between;
 }
-.existing-fields > button {
-  font-size: smaller;
+.input-fields {
+  display: flex;
+  justify-content: flex-start;
+}
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+.buttons > button {
+  font-size: small !important;
+  font-weight: lighter !important;
 }

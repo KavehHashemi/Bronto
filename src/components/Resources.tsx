@@ -37,14 +37,20 @@ const Resources = ({
   const [resourceName, setResourceName] = useState<string>("");
   const decide = async (ok: boolean) => {
     if (resourceName !== "") {
-      if (ok) addResource(resourceName, calendarRef.current?.getApi());
+      if (ok) {
+        addResource(resourceName, calendarRef.current?.getApi());
+        setResourceName("");
+      }
     }
-    openHandler("resourceDialog", false);
-    setResourceName("");
+    if (!ok) openHandler("resourceDialog", false);
   };
   return (
-    <Dialog fullWidth open={open.resourceDialog} onClose={() => decide(false)}>
-      <Header>Resources</Header>
+    <Dialog
+      fullWidth
+      open={open.resourceDialog}
+      onClose={() => openHandler("resourceDialog", false)}
+    >
+      <Header className="header-container">Resources</Header>
       <Content className="content-container">
         {resourceElements}
         <>
