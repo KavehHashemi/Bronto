@@ -3,10 +3,15 @@ import { eventsDB } from "./indexedDb/EventsDB";
 import { EventType, Resource } from "./Types";
 import { addDuration, addHours } from "./Utils";
 import sampleData from "./data/sampleData.json";
-import { CalendarApi, EventApi, EventInput } from "@fullcalendar/react";
+import FullCalendar, {
+  CalendarApi,
+  EventApi,
+  EventDropArg,
+  EventInput,
+} from "@fullcalendar/react";
 import { ResourceInput } from "@fullcalendar/resource-common";
 import { resourceDB } from "./indexedDb/ResourcesDB";
-import { DateClickArg } from "@fullcalendar/interaction";
+import { DateClickArg, EventResizeDoneArg } from "@fullcalendar/interaction";
 import moment from "moment";
 
 ///EVENTS
@@ -27,20 +32,14 @@ export const createEventTypeFromEventApi = (eventApi: EventApi): EventType => {
 export const createEventTypeFromDateClick = (
   dateClick: DateClickArg
 ): EventType => {
-  let a = moment(dateClick.dateStr).toDate();
-  let b = moment(dateClick.dateStr).add(1, "h").toDate();
-  // console.log(a);
-  // console.log(b);
-
   let eventType: EventType = {
     id: uuid(),
     title: "",
     description: "",
     resourceId: dateClick.resource?.id || "-1",
     operations: [],
-    start: a,
-    end: b,
-    //end: new Date(addDuration(1, 0, dateClick.date)),
+    start: new Date(dateClick.dateStr),
+    end: new Date(addHours(1, dateClick.date)),
   };
   return eventType;
 };
@@ -138,7 +137,19 @@ export const loadSampleEvents = async (event: any) => {
 };
 
 export const addEventToDB = async (event: EventType) => {};
-export const editEvent = async () => {};
+export const editEvent = async (
+  calendarRef: React.RefObject<FullCalendar>,
+  e: EventDropArg | EventResizeDoneArg
+) => {
+  let calendarApi = calendarRef.current?.getApi();
+  calendarApi
+    ?.getEventById(e.event.id)
+    ?.setDates(e.event.startStr, e.event.endStr);
+  await eventsDB.events.update(
+    e.event.id,
+    createEventTypeFromEventApi(e.event)
+  );
+};
 export const deleteEvent = async () => {};
 
 ///RESOURCES
@@ -146,18 +157,36 @@ export const fetchResources = async (calendarApi?: CalendarApi) => {
   let residentResources: number = await resourceDB.resources.count();
   if (residentResources === 0) {
     for (let rsrc in sampleData.resources) {
-      await addResource(sampleData.resources[rsrc]);
+      await resourceDB.resources.add(sampleData.resources[rsrc]);
     }
   }
   const db = await resourceDB.resources.toArray();
-
   for (let rsrc in db) {
     calendarApi?.addResource(db[rsrc]);
   }
 };
+export const addResource = async (
+  resourceName: string,
+  calendarApi?: CalendarApi
+) => {
+  const newResource: Resource = { id: uuid(), title: resourceName };
+  await resourceDB.resources.add(newResource);
+  calendarApi?.addResource(newResource);
+};
 
-export const addResource = async (resource: Resource) => {
-  await resourceDB.resources.add(resource);
+export const getResourceFromResourceApi = (
+  calendarApi?: CalendarApi
+): Resource[] => {
+  let resourcesArray: Resource[] = [];
+  let calendarResources = calendarApi?.getResources();
+  if (calendarResources)
+    for (let idx = 0; idx < calendarResources.length; idx++) {
+      resourcesArray.push({
+        id: calendarResources[idx].id,
+        title: calendarResources[idx].title,
+      });
+    }
+  return resourcesArray;
 };
 export const editResource = async () => {};
 export const deleteResource = async () => {};

@@ -28,19 +28,28 @@ export type Duration = {
   minutes: number;
 };
 
-export type addDialogProps = {
-  open: boolean;
+export type EventDialogProps = {
+  open: ShowDialog;
   openHandler: (id: string, show: boolean) => void;
-  // resourceId: string;
-  // start: Date;
   calendarRef: React.RefObject<FullCalendar>;
-  event: EventType | undefined;
-  // setEvent: (event: EventType) => void;
+  event: EventType;
+  isNew: boolean;
 };
 
-export type editDialogProps = {
-  open: boolean;
+export type DeleteDialogProps = {
+  open: ShowDialog;
   openHandler: (id: string, show: boolean) => void;
-  event: EventType | undefined;
+  confirmDelete: () => void;
+};
+
+export type ResourceDialogProps = {
+  open: ShowDialog;
+  openHandler: (id: string, show: boolean) => void;
+  calendarRef: React.RefObject<FullCalendar>;
+  array: Resource[];
+};
+
+export type ResourceComponentProps = {
+  resource: Resource;
   calendarRef: React.RefObject<FullCalendar>;
 };

@@ -1,0 +1,21 @@
+input[type="text"] {
+  font-size: small;
+}
+.content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.fields {
+  background-color: aliceblue;
+}
+.labels {
+  font-size: small !important;
+}
+.existing-fields {
+  display: flex;
+  justify-content: space-between;
+}
+.existing-fields > button {
+  font-size: smaller;
+}

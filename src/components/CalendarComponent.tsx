@@ -22,56 +22,39 @@ import {
   fetchResources,
   createEventTypeFromEventApi,
   createEventTypeFromDateClick,
+  getResourceFromResourceApi,
 } from "../FCWrapper";
 import { eventsDB } from "../indexedDb/EventsDB";
 import { resourceDB } from "../indexedDb/ResourcesDB";
-import AddEventDialog from "./AddEventDialog";
-import EditEventDialog from "./EditEventDialog";
+
 import { addDuration, addHours } from "../Utils";
 import EventDialog from "./EventDialog";
+import Resources from "./Resources";
 
 const CalendarComponent = () => {
+  const plugins = [resourceTimelinePlugin, interactionPlugin];
   const calendarRef = useRef<FullCalendar>(null);
 
-  const [openDialog, setOpenDialog] = useState<ShowDialog>({
-    event: false,
-    date: false,
-    eventDialog: false,
-  });
   useEffect(() => {
     let calendarApi = calendarRef.current?.getApi();
     fetchResources(calendarApi);
     fetchEvents(calendarApi);
   }, [calendarRef]);
 
-  ///AddEventDialog Parameters
+  const [openDialog, setOpenDialog] = useState<ShowDialog>({
+    eventDialog: false,
+    deleteDialog: false,
+    resourceDialog: false,
+  });
 
-  // const [resourceId, setResourceId] = useState<string>("");
-  // const [start, setStart] = useState<Date>(new Date());
-
-  ///EditEventDialog Paramater
-
-  const handleShowDialog = (id: string, show: boolean) => {
+  const handleShowDialog = async (id: string, show: boolean) => {
     setOpenDialog({ ...openDialog, [id]: show });
   };
 
   //const format: string = "YYYY/M/D HH:mm";
 
-  // const [eventDuration, setEventDuration] = useState<Duration>({
-  //   hours: 0,
-  //   minutes: 0,
-  // });
-  //const defaultGap = 1;
-
-  const plugins = [resourceTimelinePlugin, interactionPlugin];
   const [resources, setResources] = useState<Resource[]>([]);
-  //const fetchEvents = () => {};
-  // const fetchResources = () => {};
-  //const fetchOperations = () => {};
 
-  // const createCurrentEvent = (event: EventApi) => {
-  //   setPassedEvent(createEventTypeFromEventApi(event));
-  // };
   const [isNew, setIsNew] = useState<boolean>(true);
   const [currentEvent, setCurrentEvent] = useState<EventType>({
     id: uuid(),
@@ -94,20 +77,16 @@ const CalendarComponent = () => {
     setIsNew(false);
     handleShowDialog("eventDialog", true);
   };
-  const onDrop = (e: EventDropArg) => {
-    console.log(e.delta);
-    editEvent();
+  const onDrop = async (e: EventDropArg) => {
+    editEvent(calendarRef, e);
   };
-  const onResize = (e: EventResizeDoneArg) => {
-    console.log(e.startDelta);
-    console.log(e.endDelta);
-    //EditEvent();
+  const onResize = async (e: EventResizeDoneArg) => {
+    editEvent(calendarRef, e);
   };
-
-  // const AddEvent = () => {};
-  // const EditEvent = () => {};
-  // const DeleteEvent = () => {};
-
+  const a = () => {
+    console.log("resourceDialog open");
+    handleShowDialog("resourceDialog", true);
+  };
   // const AddResource = () => {};
   // const EditResource = () => {};
   // const DeleteResource = () => {};
@@ -125,12 +104,13 @@ const CalendarComponent = () => {
         eventDrop={(e) => onDrop(e)}
         eventResize={(e) => onResize(e)}
         customButtons={{
-          goTo: {
-            text: "Go to...",
+          addResource: {
+            text: "Add Resource",
+            click: a,
           },
         }}
         headerToolbar={{
-          left: "goTo",
+          left: "addResource",
           center: "title",
           right: "prev,next,today",
         }}
@@ -145,29 +125,19 @@ const CalendarComponent = () => {
         defaultTimedEventDuration="00:30"
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
       />
-      {/* <AddEventDialog
-        //resourceId={resourceId}
-        //start={start}
-        event={passedEvent}
-        open={openDialog.date}
-        openHandler={handleShowDialog}
-        calendarRef={calendarRef}
-      ></AddEventDialog>
-      <EditEventDialog
-        // event={event}
-        // setEvent={setEvent}
-        event={passedEvent}
-        open={openDialog.event}
-        openHandler={handleShowDialog}
-        calendarRef={calendarRef}
-      ></EditEventDialog> */}
       <EventDialog
         event={currentEvent}
-        open={openDialog.eventDialog}
+        open={openDialog}
         openHandler={handleShowDialog}
         calendarRef={calendarRef}
         isNew={isNew}
       ></EventDialog>
+      <Resources
+        open={openDialog}
+        openHandler={handleShowDialog}
+        calendarRef={calendarRef}
+        array={getResourceFromResourceApi(calendarRef.current?.getApi())}
+      ></Resources>
     </>
   );
 };
