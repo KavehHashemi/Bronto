@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { Resource, ResourceComponentProps } from "../Types";
-import "./Resources.css";
+import { Resource, ResourceComponentProps, entityType } from "../Types";
+import "../style/ResourcesDialog.css";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { resourceDB } from "../indexedDb/ResourcesDB";
+import { eventsDB } from "../indexedDb/EventsDB";
+import DeleteDialog from "./DeleteDialog";
 
 const ResourceComponent = ({
   resource,
   calendarRef,
+  open,
+  openHandler,
 }: ResourceComponentProps) => {
   const [singleResource, setSingleResource] = useState<Resource | null>(
     resource
@@ -24,6 +28,13 @@ const ResourceComponent = ({
 
   const deleteResource = async () => {
     if (singleResource) {
+      let events = await eventsDB.events
+        .where("resourceId")
+        .equals(singleResource.id)
+        .toArray();
+      for (let ev in events) {
+        await eventsDB.events.delete(events[ev].id);
+      }
       await resourceDB.resources.delete(singleResource.id);
       calendarRef.current
         ?.getApi()
@@ -50,12 +61,28 @@ const ResourceComponent = ({
         </div>
         <div className="buttons">
           <Button variant="text" color="info" onClick={editResource}>
-            Save
+            Edit
           </Button>
-          <Button variant="text" color="error" onClick={deleteResource}>
+          <Button
+            variant="text"
+            color="error"
+            onClick={() => {
+              openHandler({
+                deleteDialog: true,
+                resourceDialog: true,
+                eventDialog: false,
+              });
+            }}
+          >
             Delete
           </Button>
         </div>
+        <DeleteDialog
+          type={entityType.resource}
+          open={open}
+          openHandler={openHandler}
+          confirmDelete={deleteResource}
+        ></DeleteDialog>
       </div>
     );
   else {

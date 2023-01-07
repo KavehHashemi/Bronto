@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { ResourceDialogProps, Resource } from "../Types";
-import "./Resources.css";
-import { addResource } from "../FCWrapper";
+import "../style/ResourcesDialog.css";
+import CloseIcon from "@mui/icons-material/Close";
+import { addResource, getResourceFromResourceApi } from "../FCWrapper";
 import Dialog from "@mui/material/Dialog";
 import Header from "@mui/material/DialogTitle";
 import Content from "@mui/material/DialogContent";
@@ -11,22 +12,23 @@ import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import ResourceComponent from "./ResourceComponent";
 
-const Resources = ({
+const ResourcesDialog = ({
   open,
   openHandler,
   array,
   calendarRef,
 }: ResourceDialogProps) => {
   const [resourcesArray, setResourcesArray] = useState<Resource[]>(array);
+  const resourceElements: JSX.Element[] = [];
   useEffect(() => {
     setResourcesArray(array);
   }, [array, calendarRef]);
-
-  const resourceElements: JSX.Element[] = [];
   if (resourcesArray)
     for (let i = 0; i < resourcesArray.length; i++) {
       resourceElements.push(
         <ResourceComponent
+          open={open}
+          openHandler={openHandler}
           key={resourcesArray[i].id}
           resource={resourcesArray[i]}
           calendarRef={calendarRef}
@@ -38,23 +40,52 @@ const Resources = ({
   const decide = async (ok: boolean) => {
     if (resourceName !== "") {
       if (ok) {
-        addResource(resourceName, calendarRef.current?.getApi());
+        await addResource(resourceName, calendarRef.current?.getApi());
+        setResourcesArray(
+          getResourceFromResourceApi(calendarRef.current?.getApi())
+        );
         setResourceName("");
       }
     }
-    if (!ok) openHandler("resourceDialog", false);
+    if (!ok)
+      openHandler({
+        resourceDialog: false,
+        eventDialog: false,
+        deleteDialog: false,
+      });
   };
   return (
     <Dialog
       fullWidth
       open={open.resourceDialog}
-      onClose={() => openHandler("resourceDialog", false)}
+      onClose={() =>
+        openHandler({
+          resourceDialog: false,
+          eventDialog: false,
+          deleteDialog: false,
+        })
+      }
     >
-      <Header className="header-container">Resources</Header>
+      <Header className="header-container">
+        <div>Resources</div>
+        <div>
+          <CloseIcon
+            sx={{ cursor: "pointer" }}
+            onClick={() =>
+              openHandler({
+                resourceDialog: false,
+                eventDialog: false,
+                deleteDialog: false,
+              })
+            }
+          ></CloseIcon>
+        </div>
+      </Header>
       <Content className="content-container">
+        <InputLabel className="labels">Existing resource</InputLabel>
         {resourceElements}
-        <>
-          <InputLabel className="labels">Add a new resource</InputLabel>
+        <InputLabel className="labels">Add a new resource</InputLabel>
+        <div className="existing-fields">
           <TextField
             className="fields"
             variant="outlined"
@@ -63,10 +94,15 @@ const Resources = ({
             value={resourceName}
             onChange={(e) => setResourceName(e.target.value)}
           ></TextField>
-        </>
+          <div className="buttons">
+            <Button variant="text" color="primary" onClick={() => decide(true)}>
+              Add
+            </Button>
+          </div>
+        </div>
       </Content>
       <Actions>
-        <Button variant="text" color="inherit" onClick={() => decide(false)}>
+        {/* <Button variant="text" color="inherit" onClick={() => decide(false)}>
           Cancel
         </Button>
         <Button
@@ -75,10 +111,10 @@ const Resources = ({
           onClick={() => decide(true)}
         >
           Save
-        </Button>
+        </Button> */}
       </Actions>
     </Dialog>
   );
 };
 
-export default Resources;
+export default ResourcesDialog;

@@ -1,14 +1,18 @@
 /* HEADER */
+.event-header {
+  display: flex;
+  justify-content: space-between;
+}
 /* CONTENT */
-.content-container {
+.event-container {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-.labels {
+.event-labels {
   font-size: small !important;
 }
-.fields {
+.event-fields {
   background-color: aliceblue;
 }
 
@@ -19,24 +23,24 @@ input[type="text"] {
 input[type="number"] {
   font-size: small;
 }
-.numberfields {
+.event-numberfields {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.numberfields > div {
+.event-numberfields > div {
   font-size: small;
 }
-.numberinputs {
+.event-numberinputs {
   width: 5rem;
   background-color: aliceblue;
 }
 /* ACTIONS */
-.actions {
+.event-actions {
   padding-inline: 16px !important;
   justify-content: space-between !important;
 }
-.actions > div[id="delete"] > button {
+.event-actions > div[id="delete"] > button {
   font-size: 0.75rem;
   font-weight: lighter;
 }

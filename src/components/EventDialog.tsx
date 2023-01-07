@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import React, { useState, useEffect } from "react";
-import { Duration, EventType, EventDialogProps } from "../Types";
+import { Duration, EventType, EventDialogProps, entityType } from "../Types";
 import Data from "../data/sampleData.json";
-import "./EventDialog.css";
+import "../style/EventDialog.css";
+import CloseIcon from "@mui/icons-material/Close";
 
 import Dialog from "@mui/material/Dialog";
 import Header from "@mui/material/DialogTitle";
@@ -57,19 +58,30 @@ const EventDialog = ({
       : await eventsDB.events.update(currentEvent.id, currentEvent);
     calendarApi?.getEventById(currentEvent.id)?.remove();
     calendarApi?.addEvent(currentEvent);
-    openHandler("eventDialog", false);
+    //openHandler("eventDialog", false);
+    openHandler({
+      eventDialog: false,
+      deleteDialog: false,
+      resourceDialog: false,
+    });
   };
 
   const cancelEvent = () => {
     setCurrentEvent(event);
-    openHandler("eventDialog", false);
+    //openHandler("eventDialog", false);
+    openHandler({
+      eventDialog: false,
+      deleteDialog: false,
+      resourceDialog: false,
+    });
   };
 
   const deleteEvent = async () => {
+    //openHandler("eventDialog", false);
+    // openHandler("eventDialog", false);
     await eventsDB.events.delete(currentEvent.id);
     let calendarApi = calendarRef.current?.getApi();
     calendarApi?.getEventById(currentEvent.id)?.remove();
-    openHandler("eventDialog", false);
   };
 
   const handleOperationChange = (
@@ -98,8 +110,8 @@ const EventDialog = ({
   return (
     <>
       <Dialog fullWidth open={open.eventDialog} onClose={cancelEvent}>
-        <Header>
-          <>
+        <Header className="event-header">
+          <div>
             {isNew
               ? `Add New Event to ${
                   calendarRef.current
@@ -107,12 +119,24 @@ const EventDialog = ({
                     .getResourceById(currentEvent?.resourceId)?.title
                 } at ${currentEvent?.start.getHours()}`
               : `Edit ${currentEvent.title}`}
-          </>
+          </div>
+          <div>
+            <CloseIcon
+              sx={{ cursor: "pointer" }}
+              onClick={() =>
+                openHandler({
+                  resourceDialog: false,
+                  eventDialog: false,
+                  deleteDialog: false,
+                })
+              }
+            ></CloseIcon>
+          </div>
         </Header>
-        <Content className="content-container">
-          <InputLabel className="labels">Title</InputLabel>
+        <Content className="event-container">
+          <InputLabel className="event-labels">Title</InputLabel>
           <TextField
-            className="fields"
+            className="event-fields"
             variant="outlined"
             size="small"
             placeholder="Event Title"
@@ -121,9 +145,9 @@ const EventDialog = ({
               setCurrentEvent({ ...currentEvent, title: e.target.value })
             }
           ></TextField>
-          <InputLabel className="labels">Description</InputLabel>
+          <InputLabel className="event-labels">Description</InputLabel>
           <TextField
-            className="fields"
+            className="event-fields"
             variant="outlined"
             size="small"
             placeholder="Event Description"
@@ -132,10 +156,10 @@ const EventDialog = ({
               setCurrentEvent({ ...currentEvent, description: e.target.value })
             }
           ></TextField>
-          <InputLabel className="labels">Operations</InputLabel>
+          <InputLabel className="event-labels">Operations</InputLabel>
           <Select
             multiple
-            className="fields"
+            className="event-fields"
             variant="outlined"
             size="small"
             value={operations}
@@ -155,13 +179,13 @@ const EventDialog = ({
               </MenuItem>
             ))}
           </Select>
-          <InputLabel className="labels">Duration</InputLabel>
-          <div className="numberfields">
+          <InputLabel className="event-labels">Duration</InputLabel>
+          <div className="event-numberfields">
             <TextField
               inputProps={hoursInputProps}
               type="number"
               size="small"
-              className="numberinputs"
+              className="event-numberinputs"
               value={duration.hours}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 if (e.target.checkValidity()) {
@@ -177,7 +201,7 @@ const EventDialog = ({
               inputProps={minutesInputProps}
               type={"number"}
               size="small"
-              className="numberinputs"
+              className="event-numberinputs"
               value={duration.minutes}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 if (e.target.checkValidity()) {
@@ -191,15 +215,21 @@ const EventDialog = ({
             <div>minutes</div>
           </div>
         </Content>
-        <Actions className="actions">
+        <Actions className="event-actions">
           {isNew ? (
             <div></div>
           ) : (
             <div id="delete">
               <Button
-                color="warning"
+                color="error"
                 variant="text"
-                onClick={() => openHandler("deleteDialog", true)}
+                onClick={() => {
+                  openHandler({
+                    eventDialog: true,
+                    deleteDialog: true,
+                    resourceDialog: false,
+                  });
+                }}
               >
                 Delete Event
               </Button>
@@ -216,6 +246,7 @@ const EventDialog = ({
         </Actions>
       </Dialog>
       <DeleteDialog
+        type={entityType.event}
         open={open}
         openHandler={openHandler}
         confirmDelete={deleteEvent}

@@ -6,7 +6,7 @@ export class EventsDB extends Dexie {
   constructor() {
     super("EventsDB");
     this.version(1).stores({
-      events: "id",
+      events: "id,resourceId",
     });
   }
 }

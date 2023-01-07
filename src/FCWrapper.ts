@@ -9,10 +9,8 @@ import FullCalendar, {
   EventDropArg,
   EventInput,
 } from "@fullcalendar/react";
-import { ResourceInput } from "@fullcalendar/resource-common";
 import { resourceDB } from "./indexedDb/ResourcesDB";
 import { DateClickArg, EventResizeDoneArg } from "@fullcalendar/interaction";
-import moment from "moment";
 
 ///EVENTS
 

@@ -1,4 +1,4 @@
-import FullCalendar, { CalendarApi, EventApi } from "@fullcalendar/react";
+import FullCalendar from "@fullcalendar/react";
 
 export type EventType = {
   id: string;
@@ -30,26 +30,37 @@ export type Duration = {
 
 export type EventDialogProps = {
   open: ShowDialog;
-  openHandler: (id: string, show: boolean) => void;
+  //openHandler: (id: string, show: boolean) => void;
+  openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
   calendarRef: React.RefObject<FullCalendar>;
   event: EventType;
   isNew: boolean;
 };
 
 export type DeleteDialogProps = {
+  type: entityType;
   open: ShowDialog;
-  openHandler: (id: string, show: boolean) => void;
+  //openHandler: (id: string, show: boolean) => void;
+  openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
   confirmDelete: () => void;
 };
 
 export type ResourceDialogProps = {
   open: ShowDialog;
-  openHandler: (id: string, show: boolean) => void;
+  //openHandler: (id: string, show: boolean) => void;
+  openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
   calendarRef: React.RefObject<FullCalendar>;
   array: Resource[];
 };
 
 export type ResourceComponentProps = {
+  open: ShowDialog;
+  openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
   resource: Resource;
   calendarRef: React.RefObject<FullCalendar>;
 };
+
+export enum entityType {
+  event = "event",
+  resource = "resource",
+}

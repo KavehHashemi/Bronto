@@ -1,21 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable array-callback-return */
 import FullCalendar, {
-  CalendarApi,
-  EventApi,
   EventClickArg,
+  EventContentArg,
   EventDropArg,
 } from "@fullcalendar/react";
 import "@fullcalendar/react/dist/vdom";
 import interactionPlugin, {
   DateClickArg,
-  DropArg,
   EventResizeDoneArg,
 } from "@fullcalendar/interaction";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuid } from "uuid";
-import { ShowDialog, Duration, EventType, Operation, Resource } from "../Types";
+import { ShowDialog, EventType } from "../Types";
+import "../style/CalendarComponent.css";
 import {
   editEvent,
   fetchEvents,
@@ -24,12 +23,10 @@ import {
   createEventTypeFromDateClick,
   getResourceFromResourceApi,
 } from "../FCWrapper";
-import { eventsDB } from "../indexedDb/EventsDB";
-import { resourceDB } from "../indexedDb/ResourcesDB";
 
-import { addDuration, addHours } from "../Utils";
+import { addDuration } from "../Utils";
 import EventDialog from "./EventDialog";
-import Resources from "./Resources";
+import ResourcesDialog from "./ResourcesDialog";
 
 const CalendarComponent = () => {
   const plugins = [resourceTimelinePlugin, interactionPlugin];
@@ -47,13 +44,9 @@ const CalendarComponent = () => {
     resourceDialog: false,
   });
 
-  const handleShowDialog = async (id: string, show: boolean) => {
+  const handleShowDialog = (id: string, show: boolean) => {
     setOpenDialog({ ...openDialog, [id]: show });
   };
-
-  //const format: string = "YYYY/M/D HH:mm";
-
-  const [resources, setResources] = useState<Resource[]>([]);
 
   const [isNew, setIsNew] = useState<boolean>(true);
   const [currentEvent, setCurrentEvent] = useState<EventType>({
@@ -83,30 +76,35 @@ const CalendarComponent = () => {
   const onResize = async (e: EventResizeDoneArg) => {
     editEvent(calendarRef, e);
   };
-  const a = () => {
-    console.log("resourceDialog open");
+  const manageResources = () => {
     handleShowDialog("resourceDialog", true);
   };
-  // const AddResource = () => {};
-  // const EditResource = () => {};
-  // const DeleteResource = () => {};
 
-  // const RearrangeEvents = () => {};
+  const renderEventContent = (e: EventContentArg) => {
+    return (
+      <>
+        <i>{e.event.title}</i>
+        <i> - </i>
+        <i>{e.event.extendedProps.description}</i>
+      </>
+    );
+  };
 
   return (
-    <>
+    <div className="main-container">
       <FullCalendar
         plugins={plugins}
         ref={calendarRef}
         initialView="resourceTimelineWeek"
+        eventContent={(e) => renderEventContent(e)}
         dateClick={(e) => onDateClick(e)}
         eventClick={(e) => onEventClick(e)}
         eventDrop={(e) => onDrop(e)}
         eventResize={(e) => onResize(e)}
         customButtons={{
           addResource: {
-            text: "Add Resource",
-            click: a,
+            text: "Resources",
+            click: manageResources,
           },
         }}
         headerToolbar={{
@@ -128,17 +126,17 @@ const CalendarComponent = () => {
       <EventDialog
         event={currentEvent}
         open={openDialog}
-        openHandler={handleShowDialog}
+        openHandler={setOpenDialog}
         calendarRef={calendarRef}
         isNew={isNew}
       ></EventDialog>
-      <Resources
+      <ResourcesDialog
         open={openDialog}
-        openHandler={handleShowDialog}
+        openHandler={setOpenDialog}
         calendarRef={calendarRef}
         array={getResourceFromResourceApi(calendarRef.current?.getApi())}
-      ></Resources>
-    </>
+      ></ResourcesDialog>
+    </div>
   );
 };
 
