@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { eventsDB } from "./indexedDb/EventsDB";
 import { EventType, Resource } from "./Types";
-import { addDuration, addHours } from "./Utils";
+import { addDuration, addHours, getRandomColor } from "./Utils";
 import sampleData from "./data/sampleData.json";
 import FullCalendar, {
   CalendarApi,
@@ -167,7 +167,11 @@ export const addResource = async (
   resourceName: string,
   calendarApi?: CalendarApi
 ) => {
-  const newResource: Resource = { id: uuid(), title: resourceName };
+  const newResource: Resource = {
+    id: uuid(),
+    title: resourceName,
+    eventColor: getRandomColor(),
+  };
   await resourceDB.resources.add(newResource);
   calendarApi?.addResource(newResource);
 };
@@ -182,6 +186,7 @@ export const getResourceFromResourceApi = (
       resourcesArray.push({
         id: calendarResources[idx].id,
         title: calendarResources[idx].title,
+        eventColor: calendarResources[idx].eventBackgroundColor,
       });
     }
   return resourcesArray;

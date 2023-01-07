@@ -14,8 +14,8 @@
     }
   ],
   "resources": [
-    { "id": "1", "title": "resource 1" },
-    { "id": "2", "title": "resource 2" }
+    { "id": "1", "title": "resource 1", "eventColor": "#0d58a8" },
+    { "id": "2", "title": "resource 2", "eventColor": "#340c7d" }
   ],
   "operations": [
     { "id": "1", "title": "op. 1" },

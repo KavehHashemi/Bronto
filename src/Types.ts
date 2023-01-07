@@ -13,6 +13,7 @@ export type EventType = {
 export type Resource = {
   id: string;
   title: string;
+  eventColor: string;
 };
 
 export type Operation = {
@@ -23,6 +24,7 @@ export type Operation = {
 export type ShowDialog = {
   [id: string]: boolean;
 };
+
 export type Duration = {
   hours: number;
   minutes: number;

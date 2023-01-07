@@ -24,7 +24,7 @@ import {
   getResourceFromResourceApi,
 } from "../FCWrapper";
 
-import { addDuration } from "../Utils";
+import { addDuration, getRandomColor } from "../Utils";
 import EventDialog from "./EventDialog";
 import ResourcesDialog from "./ResourcesDialog";
 
@@ -70,24 +70,32 @@ const CalendarComponent = () => {
     setIsNew(false);
     handleShowDialog("eventDialog", true);
   };
+
   const onDrop = async (e: EventDropArg) => {
     editEvent(calendarRef, e);
   };
+
   const onResize = async (e: EventResizeDoneArg) => {
     editEvent(calendarRef, e);
   };
+
   const manageResources = () => {
     handleShowDialog("resourceDialog", true);
   };
 
   const renderEventContent = (e: EventContentArg) => {
     return (
-      <>
+      <div>
         <i>{e.event.title}</i>
         <i> - </i>
         <i>{e.event.extendedProps.description}</i>
-      </>
+      </div>
     );
+  };
+
+  const a = (): string => {
+    let color: string = getRandomColor();
+    return color;
   };
 
   return (
@@ -96,6 +104,7 @@ const CalendarComponent = () => {
         plugins={plugins}
         ref={calendarRef}
         initialView="resourceTimelineWeek"
+        //eventColor={getRandomColor()}
         eventContent={(e) => renderEventContent(e)}
         dateClick={(e) => onDateClick(e)}
         eventClick={(e) => onEventClick(e)}
