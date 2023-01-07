@@ -24,7 +24,7 @@ import {
   getResourceFromResourceApi,
 } from "../FCWrapper";
 
-import { addDuration, getRandomColor } from "../Utils";
+import { addDuration } from "../Utils";
 import EventDialog from "./EventDialog";
 import ResourcesDialog from "./ResourcesDialog";
 
@@ -93,18 +93,12 @@ const CalendarComponent = () => {
     );
   };
 
-  const a = (): string => {
-    let color: string = getRandomColor();
-    return color;
-  };
-
   return (
     <div className="main-container">
       <FullCalendar
         plugins={plugins}
         ref={calendarRef}
         initialView="resourceTimelineWeek"
-        //eventColor={getRandomColor()}
         eventContent={(e) => renderEventContent(e)}
         dateClick={(e) => onDateClick(e)}
         eventClick={(e) => onEventClick(e)}
