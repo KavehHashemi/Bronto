@@ -14,6 +14,7 @@ export type Resource = {
   id: string;
   title: string;
   eventColor: string;
+  createdAt: number;
 };
 
 export type Operation = {
@@ -41,10 +42,13 @@ export type EventDialogProps = {
 
 export type DeleteDialogProps = {
   type: entityType;
+  entity: EventType | Resource;
+  //id: string;
   open: ShowDialog;
   //openHandler: (id: string, show: boolean) => void;
   openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
-  confirmDelete: () => void;
+  //confirmDelete: (id: string) => void;
+  calendarRef: React.RefObject<FullCalendar>;
 };
 
 export type ResourceDialogProps = {

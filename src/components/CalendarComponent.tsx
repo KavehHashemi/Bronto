@@ -13,7 +13,7 @@ import interactionPlugin, {
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuid } from "uuid";
-import { ShowDialog, EventType } from "../Types";
+import { ShowDialog, EventType, Resource } from "../Types";
 import "../style/CalendarComponent.css";
 import {
   editEvent,
@@ -99,6 +99,7 @@ const CalendarComponent = () => {
         plugins={plugins}
         ref={calendarRef}
         initialView="resourceTimelineWeek"
+        resourceOrder={"createdAt"}
         eventContent={(e) => renderEventContent(e)}
         dateClick={(e) => onDateClick(e)}
         eventClick={(e) => onEventClick(e)}

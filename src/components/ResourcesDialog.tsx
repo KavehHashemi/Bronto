@@ -20,21 +20,27 @@ const ResourcesDialog = ({
 }: ResourceDialogProps) => {
   const [resourcesArray, setResourcesArray] = useState<Resource[]>(array);
   const resourceElements: JSX.Element[] = [];
+
   useEffect(() => {
     setResourcesArray(array);
   }, [array, calendarRef]);
+
   if (resourcesArray)
     for (let i = 0; i < resourcesArray.length; i++) {
       resourceElements.push(
         <ResourceComponent
+          key={resourcesArray[i].id}
           open={open}
           openHandler={openHandler}
-          key={resourcesArray[i].id}
           resource={resourcesArray[i]}
           calendarRef={calendarRef}
         ></ResourceComponent>
       );
     }
+
+  useEffect(() => {
+    console.log(resourcesArray);
+  }, [resourcesArray]);
 
   const [resourceName, setResourceName] = useState<string>("");
   const decide = async (ok: boolean) => {

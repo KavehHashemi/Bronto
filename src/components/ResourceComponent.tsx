@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Resource, ResourceComponentProps, entityType } from "../Types";
 import "../style/ResourcesDialog.css";
 import Button from "@mui/material/Button";
@@ -17,6 +17,10 @@ const ResourceComponent = ({
     resource
   );
 
+  // useEffect(() => {
+  //   setSingleResource(resource);
+  // }, [resource]);
+
   const editResource = async () => {
     if (singleResource) {
       let calendarApi = calendarRef.current?.getApi();
@@ -26,23 +30,22 @@ const ResourceComponent = ({
     }
   };
 
-  const deleteResource = async () => {
-    if (singleResource) {
-      let events = await eventsDB.events
-        .where("resourceId")
-        .equals(singleResource.id)
-        .toArray();
-      for (let ev in events) {
-        await eventsDB.events.delete(events[ev].id);
-      }
-      await resourceDB.resources.delete(singleResource.id);
-      calendarRef.current
-        ?.getApi()
-        .getResourceById(singleResource.id)
-        ?.remove();
-      setSingleResource(null);
-    }
-  };
+  // const deleteResource = async (id: string) => {
+  //   if (singleResource) {
+  //     let events = await eventsDB.events
+  //       .where("resourceId")
+  //       .equals(id)
+  //       .toArray();
+  //     console.log(events);
+  //     for (let ev in events) {
+  //       await eventsDB.events.delete(events[ev].id);
+  //     }
+  //     await resourceDB.resources.delete(id);
+  //     calendarRef.current?.getApi().getResourceById(id)?.remove();
+  //     setSingleResource(null);
+  //   }
+  // };
+
   if (singleResource)
     return (
       <div className="existing-fields" key={singleResource?.id}>
@@ -79,9 +82,11 @@ const ResourceComponent = ({
         </div>
         <DeleteDialog
           type={entityType.resource}
+          entity={singleResource}
           open={open}
           openHandler={openHandler}
-          confirmDelete={deleteResource}
+          calendarRef={calendarRef}
+          //confirmDelete={(id) => deleteResource(id)}
         ></DeleteDialog>
       </div>
     );

@@ -155,7 +155,12 @@ export const fetchResources = async (calendarApi?: CalendarApi) => {
   let residentResources: number = await resourceDB.resources.count();
   if (residentResources === 0) {
     for (let rsrc in sampleData.resources) {
-      await resourceDB.resources.add(sampleData.resources[rsrc]);
+      let sampleResource: Resource = {
+        ...sampleData.resources[rsrc],
+        createdAt: new Date().valueOf(),
+      };
+      await resourceDB.resources.add(sampleResource);
+      // await resourceDB.resources.add(sampleData.resources[rsrc]);
     }
   }
   const db = await resourceDB.resources.toArray();
@@ -171,6 +176,7 @@ export const addResource = async (
     id: uuid(),
     title: resourceName,
     eventColor: getRandomColor(),
+    createdAt: new Date().valueOf(),
   };
   await resourceDB.resources.add(newResource);
   calendarApi?.addResource(newResource);
@@ -187,6 +193,7 @@ export const getResourceFromResourceApi = (
         id: calendarResources[idx].id,
         title: calendarResources[idx].title,
         eventColor: calendarResources[idx].eventBackgroundColor,
+        createdAt: calendarResources[idx].extendedProps.createdAt,
       });
     }
   return resourcesArray;

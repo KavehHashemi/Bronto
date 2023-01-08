@@ -58,7 +58,6 @@ const EventDialog = ({
       : await eventsDB.events.update(currentEvent.id, currentEvent);
     calendarApi?.getEventById(currentEvent.id)?.remove();
     calendarApi?.addEvent(currentEvent);
-    //openHandler("eventDialog", false);
     openHandler({
       eventDialog: false,
       deleteDialog: false,
@@ -68,7 +67,6 @@ const EventDialog = ({
 
   const cancelEvent = () => {
     setCurrentEvent(event);
-    //openHandler("eventDialog", false);
     openHandler({
       eventDialog: false,
       deleteDialog: false,
@@ -76,12 +74,13 @@ const EventDialog = ({
     });
   };
 
-  const deleteEvent = async () => {
-    //openHandler("eventDialog", false);
-    // openHandler("eventDialog", false);
-    await eventsDB.events.delete(currentEvent.id);
+  const deleteEvent = async (id: string) => {
+    await eventsDB.events.delete(id);
     let calendarApi = calendarRef.current?.getApi();
-    calendarApi?.getEventById(currentEvent.id)?.remove();
+    calendarApi?.getEventById(id)?.remove();
+    // await eventsDB.events.delete(currentEvent.id);
+    // let calendarApi = calendarRef.current?.getApi();
+    // calendarApi?.getEventById(currentEvent.id)?.remove();
   };
 
   const handleOperationChange = (
@@ -247,9 +246,11 @@ const EventDialog = ({
       </Dialog>
       <DeleteDialog
         type={entityType.event}
+        entity={currentEvent}
         open={open}
         openHandler={openHandler}
-        confirmDelete={deleteEvent}
+        calendarRef={calendarRef}
+        //confirmDelete={(id) => deleteEvent(id)}
       ></DeleteDialog>
     </>
   );
