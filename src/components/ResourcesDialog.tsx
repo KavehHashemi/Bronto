@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ResourceDialogProps, Resource } from "../Types";
+import { ResourceDialogProps, ResourceType } from "../Types";
 import "../style/ResourcesDialog.css";
 import CloseIcon from "@mui/icons-material/Close";
 import { addResource, getResourceFromResourceApi } from "../FCWrapper";
@@ -10,54 +10,87 @@ import Actions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
-import ResourceComponent from "./ResourceComponent";
+import ResourceListComponent from "./ResourceListComponent";
 
 const ResourcesDialog = ({
   open,
   openHandler,
-  array,
+  //array,
   calendarRef,
 }: ResourceDialogProps) => {
-  const [resourcesArray, setResourcesArray] = useState<Resource[]>(array);
-  const resourceElements: JSX.Element[] = [];
+  //const [resourcesArray, setResourcesArray] = useState<Resource[]>(array);
+  //const resourceElements: JSX.Element[] = [];
+
+  // useEffect(() => {
+  //   setResourcesArray(array);
+  // }, [array, calendarRef]);
+
+  // if (resourcesArray)
+  //   for (let i = 0; i < resourcesArray.length; i++) {
+  //     resourceElements.push(
+  //       <ResourceComponent
+  //         key={resourcesArray[i].id}
+  //         open={open}
+  //         openHandler={openHandler}
+  //         resource={resourcesArray[i]}
+  //         calendarRef={calendarRef}
+  //       ></ResourceComponent>
+  //     );
+  //   }
+
+  const [array, setArray] = useState<ResourceType[]>(
+    getResourceFromResourceApi(calendarRef.current?.getApi())
+  );
 
   useEffect(() => {
-    setResourcesArray(array);
-  }, [array, calendarRef]);
+    setArray(getResourceFromResourceApi(calendarRef.current?.getApi()));
+  }, [open, calendarRef]);
 
-  if (resourcesArray)
-    for (let i = 0; i < resourcesArray.length; i++) {
-      resourceElements.push(
-        <ResourceComponent
-          key={resourcesArray[i].id}
-          open={open}
-          openHandler={openHandler}
-          resource={resourcesArray[i]}
-          calendarRef={calendarRef}
-        ></ResourceComponent>
-      );
-    }
+  // const deleteResource = async () => {
+  //   if (singleResource) {
+  //     let events = await eventsDB.events
+  //       .where("resourceId")
+  //       .equals(singleResource.id)
+  //       .toArray();
+  //     for (let ev in events) {
+  //       await eventsDB.events.delete(events[ev].id);
+  //     }
+  //     await resourceDB.resources.delete(singleResource.id);
+  //     calendarRef.current
+  //       ?.getApi()
+  //       .getResourceById(singleResource.id)
+  //       ?.remove();
+  //     setSingleResource(null);
+  //   }
+  // };
 
-  useEffect(() => {
-    console.log(resourcesArray);
-  }, [resourcesArray]);
+  // for (let i = 0; i < array.length; i++) {
+  //   resourceElements.push(
+  //     <ResourceComponent
+  //       key={array[i].id}
+  //       open={open}
+  //       openHandler={openHandler}
+  //       resource={array[i]}
+  //       calendarRef={calendarRef}
+  //     ></ResourceComponent>
+  //   );
+  // }
 
   const [resourceName, setResourceName] = useState<string>("");
   const decide = async (ok: boolean) => {
     if (resourceName !== "") {
       if (ok) {
         await addResource(resourceName, calendarRef.current?.getApi());
-        setResourcesArray(
-          getResourceFromResourceApi(calendarRef.current?.getApi())
-        );
+        setArray(getResourceFromResourceApi(calendarRef.current?.getApi()));
         setResourceName("");
       }
     }
     if (!ok)
       openHandler({
-        resourceDialog: false,
         eventDialog: false,
-        deleteDialog: false,
+        deleteEventDialog: false,
+        resourceDialog: false,
+        deleteResourceDialog: false
       });
   };
   return (
@@ -66,9 +99,10 @@ const ResourcesDialog = ({
       open={open.resourceDialog}
       onClose={() =>
         openHandler({
-          resourceDialog: false,
           eventDialog: false,
-          deleteDialog: false,
+          deleteEventDialog: false,
+          resourceDialog: false,
+          deleteResourceDialog: false
         })
       }
     >
@@ -79,9 +113,10 @@ const ResourcesDialog = ({
             sx={{ cursor: "pointer" }}
             onClick={() =>
               openHandler({
-                resourceDialog: false,
                 eventDialog: false,
-                deleteDialog: false,
+                deleteEventDialog: false,
+                resourceDialog: false,
+                deleteResourceDialog: false
               })
             }
           ></CloseIcon>
@@ -89,7 +124,13 @@ const ResourcesDialog = ({
       </Header>
       <Content className="content-container">
         <InputLabel className="labels">Existing resource</InputLabel>
-        {resourceElements}
+        <ResourceListComponent
+          // open={open}
+          // openHandler={openHandler}
+          resources={array}
+          calendarRef={calendarRef}
+        ></ResourceListComponent>
+        {/* {resourceElements} */}
         <InputLabel className="labels">Add a new resource</InputLabel>
         <div className="existing-fields">
           <TextField

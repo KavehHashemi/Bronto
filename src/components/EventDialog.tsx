@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import React, { useState, useEffect } from "react";
-import { Duration, EventType, EventDialogProps, entityType } from "../Types";
+import { Duration, EventType, EventDialogProps } from "../Types";
 import Data from "../data/sampleData.json";
 import "../style/EventDialog.css";
 import CloseIcon from "@mui/icons-material/Close";
@@ -19,7 +19,7 @@ import Chip from "@mui/material/Chip";
 import InputLabel from "@mui/material/InputLabel";
 import { calculateEndFromDuration, calculateEventsDuration } from "../Utils";
 import { eventsDB } from "../indexedDb/EventsDB";
-import DeleteDialog from "./DeleteDialog";
+import DeleteEventDialog from "./DeleteEventDialog";
 
 const EventDialog = ({
   open,
@@ -60,8 +60,9 @@ const EventDialog = ({
     calendarApi?.addEvent(currentEvent);
     openHandler({
       eventDialog: false,
-      deleteDialog: false,
+      deleteEventDialog: false,
       resourceDialog: false,
+      deleteResourceDialog: false
     });
   };
 
@@ -69,18 +70,19 @@ const EventDialog = ({
     setCurrentEvent(event);
     openHandler({
       eventDialog: false,
-      deleteDialog: false,
+      deleteEventDialog: false,
       resourceDialog: false,
+      deleteResourceDialog: false
     });
   };
 
-  const deleteEvent = async (id: string) => {
-    await eventsDB.events.delete(id);
-    let calendarApi = calendarRef.current?.getApi();
-    calendarApi?.getEventById(id)?.remove();
-    // await eventsDB.events.delete(currentEvent.id);
+  const deleteEvent = async () => {
+    // await eventsDB.events.delete(id);
     // let calendarApi = calendarRef.current?.getApi();
-    // calendarApi?.getEventById(currentEvent.id)?.remove();
+    // calendarApi?.getEventById(id)?.remove();
+    await eventsDB.events.delete(currentEvent.id);
+    let calendarApi = calendarRef.current?.getApi();
+    calendarApi?.getEventById(currentEvent.id)?.remove();
   };
 
   const handleOperationChange = (
@@ -112,11 +114,10 @@ const EventDialog = ({
         <Header className="event-header">
           <div>
             {isNew
-              ? `Add New Event to ${
-                  calendarRef.current
-                    ?.getApi()
-                    .getResourceById(currentEvent?.resourceId)?.title
-                } at ${currentEvent?.start.getHours()}`
+              ? `Add New Event to ${calendarRef.current
+                ?.getApi()
+                .getResourceById(currentEvent?.resourceId)?.title
+              } at ${currentEvent?.start.getHours()}`
               : `Edit ${currentEvent.title}`}
           </div>
           <div>
@@ -124,9 +125,10 @@ const EventDialog = ({
               sx={{ cursor: "pointer" }}
               onClick={() =>
                 openHandler({
-                  resourceDialog: false,
                   eventDialog: false,
-                  deleteDialog: false,
+                  deleteEventDialog: false,
+                  resourceDialog: false,
+                  deleteResourceDialog: false
                 })
               }
             ></CloseIcon>
@@ -225,8 +227,9 @@ const EventDialog = ({
                 onClick={() => {
                   openHandler({
                     eventDialog: true,
-                    deleteDialog: true,
+                    deleteEventDialog: true,
                     resourceDialog: false,
+                    deleteResourceDialog: false
                   });
                 }}
               >
@@ -244,14 +247,12 @@ const EventDialog = ({
           </div>
         </Actions>
       </Dialog>
-      <DeleteDialog
-        type={entityType.event}
-        entity={currentEvent}
+      <DeleteEventDialog
         open={open}
         openHandler={openHandler}
-        calendarRef={calendarRef}
-        //confirmDelete={(id) => deleteEvent(id)}
-      ></DeleteDialog>
+        eventTitle={currentEvent.title}
+        confirmDelete={deleteEvent}
+      ></DeleteEventDialog>
     </>
   );
 };

@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { eventsDB } from "./indexedDb/EventsDB";
-import { EventType, Resource } from "./Types";
+import { EventType, ResourceType } from "./Types";
 import { addDuration, addHours, getRandomColor } from "./Utils";
 import sampleData from "./data/sampleData.json";
 import FullCalendar, {
@@ -155,7 +155,7 @@ export const fetchResources = async (calendarApi?: CalendarApi) => {
   let residentResources: number = await resourceDB.resources.count();
   if (residentResources === 0) {
     for (let rsrc in sampleData.resources) {
-      let sampleResource: Resource = {
+      let sampleResource: ResourceType = {
         ...sampleData.resources[rsrc],
         createdAt: new Date().valueOf(),
       };
@@ -172,7 +172,7 @@ export const addResource = async (
   resourceName: string,
   calendarApi?: CalendarApi
 ) => {
-  const newResource: Resource = {
+  const newResource: ResourceType = {
     id: uuid(),
     title: resourceName,
     eventColor: getRandomColor(),
@@ -184,8 +184,8 @@ export const addResource = async (
 
 export const getResourceFromResourceApi = (
   calendarApi?: CalendarApi
-): Resource[] => {
-  let resourcesArray: Resource[] = [];
+): ResourceType[] => {
+  let resourcesArray: ResourceType[] = [];
   let calendarResources = calendarApi?.getResources();
   if (calendarResources)
     for (let idx = 0; idx < calendarResources.length; idx++) {
