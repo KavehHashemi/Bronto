@@ -22,10 +22,7 @@ input[type="text"] {
   display: flex;
   justify-content: space-between;
 }
-.input-fields {
-  display: flex;
-  justify-content: flex-start;
-}
+
 .buttons {
   display: flex;
   justify-content: flex-end;

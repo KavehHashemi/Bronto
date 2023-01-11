@@ -1,8 +1,8 @@
 import Dexie, { Table } from "dexie";
-import { Resource } from "../Types";
+import { ResourceType } from "../Types";
 
 export class ResourceDB extends Dexie {
-  resources!: Table<Resource>;
+  resources!: Table<ResourceType>;
   constructor() {
     super("ResourceDB");
     this.version(1).stores({

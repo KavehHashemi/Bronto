@@ -10,7 +10,7 @@ export type EventType = {
   operations: string[];
 };
 
-export type Resource = {
+export type ResourceType = {
   id: string;
   title: string;
   eventColor: string;
@@ -40,15 +40,23 @@ export type EventDialogProps = {
   isNew: boolean;
 };
 
-export type DeleteDialogProps = {
-  type: entityType;
-  entity: EventType | Resource;
+export type DeleteResourceDialogProps = {
+  resourceTitle: string;
+  index?: number;
+  // open: ShowDialog;
+  // openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
+  confirmDelete: (idx: number) => void;
+  //entity: EventType | Resource;
   //id: string;
-  open: ShowDialog;
   //openHandler: (id: string, show: boolean) => void;
+  //calendarRef: React.RefObject<FullCalendar>;
+};
+
+export type DeleteEventDialogProps = {
+  eventTitle: string;
+  open: ShowDialog;
   openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
-  //confirmDelete: (id: string) => void;
-  calendarRef: React.RefObject<FullCalendar>;
+  confirmDelete: () => void;
 };
 
 export type ResourceDialogProps = {
@@ -56,17 +64,27 @@ export type ResourceDialogProps = {
   //openHandler: (id: string, show: boolean) => void;
   openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
   calendarRef: React.RefObject<FullCalendar>;
-  array: Resource[];
+  //array: Resource[];
 };
 
-export type ResourceComponentProps = {
-  open: ShowDialog;
-  openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
-  resource: Resource;
+export type ResourceListComponentProps = {
+  // open: ShowDialog;
+  // openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
+  resources: ResourceType[];
   calendarRef: React.RefObject<FullCalendar>;
 };
 
-export enum entityType {
+export type DialogProps = {
+  contentType: ContentType;
+  content: EventType | string;
+  calendarRef: React.RefObject<FullCalendar>;
+  show: boolean;
+  handleShow: () => void;
+};
+
+export enum ContentType {
   event = "event",
   resource = "resource",
+  date = "date",
+  info = "info",
 }

@@ -13,7 +13,7 @@ import interactionPlugin, {
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuid } from "uuid";
-import { ShowDialog, EventType, Resource } from "../Types";
+import { EventType, ContentType } from "../Types";
 import "../style/CalendarComponent.css";
 import {
   editEvent,
@@ -21,14 +21,18 @@ import {
   fetchResources,
   createEventTypeFromEventApi,
   createEventTypeFromDateClick,
-  getResourceFromResourceApi,
 } from "../FCWrapper";
 
 import { addDuration } from "../Utils";
-import EventDialog from "./EventDialog";
-import ResourcesDialog from "./ResourcesDialog";
+import EntityDialog from './EntityDialog'
+import { useDialog } from "../Hooks";
+
 
 const CalendarComponent = () => {
+
+  const [show, toggleShow] = useDialog()
+  const [type, setType] = useState<ContentType>(ContentType.info)
+
   const plugins = [resourceTimelinePlugin, interactionPlugin];
   const calendarRef = useRef<FullCalendar>(null);
 
@@ -38,17 +42,23 @@ const CalendarComponent = () => {
     fetchEvents(calendarApi);
   }, [calendarRef]);
 
-  const [openDialog, setOpenDialog] = useState<ShowDialog>({
-    eventDialog: false,
-    deleteDialog: false,
-    resourceDialog: false,
-  });
+  // const [openDialog, setOpenDialog] = useState<ShowDialog>({
+  //   eventDialog: false,
+  //   deleteEventDialog: false,
+  //   resourceDialog: false,
+  //   deleteResourceDialog: false
+  // });
 
-  const handleShowDialog = (id: string, show: boolean) => {
-    setOpenDialog({ ...openDialog, [id]: show });
+  // const handleShowDialog = (id: string, show: boolean) => {
+  //   setOpenDialog({ ...openDialog, [id]: show });
+  // };
+
+  const handleShowDialog = (id: ContentType) => {
+    setType(id);
+    toggleShow()
   };
 
-  const [isNew, setIsNew] = useState<boolean>(true);
+  // const [isNew, setIsNew] = useState<boolean>(true);
   const [currentEvent, setCurrentEvent] = useState<EventType>({
     id: uuid(),
     title: "",
@@ -61,14 +71,12 @@ const CalendarComponent = () => {
 
   const onDateClick = (e: DateClickArg) => {
     setCurrentEvent(createEventTypeFromDateClick(e));
-    setIsNew(true);
-    handleShowDialog("eventDialog", true);
+    handleShowDialog(ContentType.event);
   };
 
   const onEventClick = (e: EventClickArg) => {
     setCurrentEvent(createEventTypeFromEventApi(e.event));
-    setIsNew(false);
-    handleShowDialog("eventDialog", true);
+    handleShowDialog(ContentType.event);
   };
 
   const onDrop = async (e: EventDropArg) => {
@@ -80,7 +88,7 @@ const CalendarComponent = () => {
   };
 
   const manageResources = () => {
-    handleShowDialog("resourceDialog", true);
+    handleShowDialog(ContentType.resource);
   };
 
   const renderEventContent = (e: EventContentArg) => {
@@ -127,19 +135,22 @@ const CalendarComponent = () => {
         defaultTimedEventDuration="00:30"
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
       />
-      <EventDialog
-        event={currentEvent}
+      {/* <EventDialog
         open={openDialog}
         openHandler={setOpenDialog}
         calendarRef={calendarRef}
+        event={currentEvent}
         isNew={isNew}
       ></EventDialog>
       <ResourcesDialog
         open={openDialog}
         openHandler={setOpenDialog}
         calendarRef={calendarRef}
-        array={getResourceFromResourceApi(calendarRef.current?.getApi())}
-      ></ResourcesDialog>
+      //array={getResourceFromResourceApi(calendarRef.current?.getApi())}
+      ></ResourcesDialog> */}
+      {/* <Modal show={isShowingModal} handleShow={toggleModal}></Modal> */}
+      {/* <Button onClick={toggleShow}>Show Dialog</Button> */}
+      <EntityDialog show={show} handleShow={toggleShow} contentType={type} content={currentEvent} calendarRef={calendarRef}></EntityDialog>
     </div>
   );
 };
