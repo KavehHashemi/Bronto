@@ -76,7 +76,7 @@ export type ResourceListComponentProps = {
 
 export type DialogProps = {
   contentType: ContentType;
-  content: EventType | ResourceType;
+  content: EventType | string;
   calendarRef: React.RefObject<FullCalendar>;
   show: boolean;
   handleShow: () => void;
@@ -87,5 +87,4 @@ export enum ContentType {
   resource = "resource",
   date = "date",
   info = "info",
-  confirmation = "confirmation",
 }

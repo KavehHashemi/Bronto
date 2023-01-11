@@ -1,13 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { Duration, EventType } from "../Types";
+import { ContentType, Duration, EventType } from "../Types";
 import Data from "../data/sampleData.json";
 import "../style/EventDialog.css";
-
+import Dialog from "@mui/material/Dialog"
 import Header from "@mui/material/DialogTitle";
 import Content from "@mui/material/DialogContent";
 import Actions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import CloseIcon from "@mui/icons-material/Close";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Box from "@mui/material/Box";
@@ -16,13 +18,15 @@ import InputLabel from "@mui/material/InputLabel";
 import { calculateEndFromDuration, calculateEventsDuration } from "../Utils";
 import { eventsDB } from "../indexedDb/EventsDB";
 import FullCalendar from "@fullcalendar/react";
+import ConfirmationDialog from "./ConfirmationDialog";
 type props = {
     event: EventType
     calendarRef: React.RefObject<FullCalendar>;
     isNew: boolean;
+    open: boolean;
+    openHandler: () => void
 }
-const EventComponent = ({ event, calendarRef, isNew }: props) => {
-
+const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: props) => {
     const ops = Data.operations;
     const [currentEvent, setCurrentEvent] = useState<EventType>(event);
     const [operations, setOperations] = useState<string[]>([]);
@@ -33,6 +37,10 @@ const EventComponent = ({ event, calendarRef, isNew }: props) => {
         setOperations(event.operations);
         setDuration(calculateEventsDuration(event));
     }, [event]);
+
+    useEffect(() => {
+        console.log();
+    }, [currentEvent])
 
     useEffect(() => {
         setCurrentEvent({ ...currentEvent, operations: operations });
@@ -47,25 +55,41 @@ const EventComponent = ({ event, calendarRef, isNew }: props) => {
     }, [duration]);
 
     const addEvent = async () => {
-        let calendarApi = calendarRef.current?.getApi();
-        isNew
-            ? await eventsDB.events.add(currentEvent)
-            : await eventsDB.events.update(currentEvent.id, currentEvent);
-        calendarApi?.getEventById(currentEvent.id)?.remove();
-        calendarApi?.addEvent(currentEvent);
-
+        if (currentEvent.title !== "" && currentEvent.start !== currentEvent.end) {
+            let calendarApi = calendarRef.current?.getApi();
+            isNew
+                ? await eventsDB.events.add(currentEvent)
+                : await eventsDB.events.update(currentEvent.id, currentEvent);
+            calendarApi?.getEventById(currentEvent.id)?.remove();
+            calendarApi?.addEvent(currentEvent);
+            openHandler();
+        }
     };
 
     const cancelEvent = () => {
         setCurrentEvent(event);
-
+        openHandler()
     };
 
     const deleteEvent = async () => {
         await eventsDB.events.delete(currentEvent.id);
         let calendarApi = calendarRef.current?.getApi();
         calendarApi?.getEventById(currentEvent.id)?.remove();
+        openHandler()
     };
+    ////////////////////////
+    const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
+    const [ok, setOk] = useState<boolean>(false)
+    const handleDelete = () => {
+        setShowDeleteDialog(true)
+    }
+    useEffect(() => {
+        if (ok) {
+            deleteEvent()
+            setOk(false)
+        }
+    }, [ok])
+    ////////////////////
 
     const handleOperationChange = (
         event: SelectChangeEvent<typeof operations>
@@ -75,8 +99,6 @@ const EventComponent = ({ event, calendarRef, isNew }: props) => {
         } = event;
         setOperations(typeof value === "string" ? value.split(",") : value);
     };
-
-
 
     const minutesInputProps = {
         step: 15,
@@ -89,16 +111,20 @@ const EventComponent = ({ event, calendarRef, isNew }: props) => {
     };
     return (
         <>
-            <>
+            <Dialog fullWidth open={open} onClose={openHandler}>
                 <Header className="event-header">
-
-                    {isNew
+                    <div>{isNew
                         ? `Add New Event to ${calendarRef.current
                             ?.getApi()
                             .getResourceById(currentEvent?.resourceId)?.title
                         } at ${currentEvent?.start.getHours()}`
-                        : `Edit ${currentEvent.title}`}
-
+                        : `Edit ${currentEvent.title}`}</div>
+                    <div>
+                        <CloseIcon
+                            sx={{ cursor: "pointer" }}
+                            onClick={openHandler}
+                        ></CloseIcon>
+                    </div>
                 </Header>
                 <Content className="event-container">
                     <InputLabel className="event-labels">Title</InputLabel>
@@ -118,7 +144,7 @@ const EventComponent = ({ event, calendarRef, isNew }: props) => {
                         variant="outlined"
                         size="small"
                         placeholder="Event Description"
-                        value={event.description}
+                        value={currentEvent.description}
                         onChange={(e) =>
                             setCurrentEvent({ ...currentEvent, description: e.target.value })
                         }
@@ -190,9 +216,7 @@ const EventComponent = ({ event, calendarRef, isNew }: props) => {
                             <Button
                                 color="error"
                                 variant="text"
-                                onClick={() => {
-
-                                }}
+                                onClick={handleDelete}
                             >
                                 Delete Event
                             </Button>
@@ -207,8 +231,8 @@ const EventComponent = ({ event, calendarRef, isNew }: props) => {
                         </Button>
                     </div>
                 </Actions>
-            </>
-
+            </Dialog>
+            <ConfirmationDialog open={showDeleteDialog} openHandler={setShowDeleteDialog} confirmation={setOk} title={currentEvent.title} type={ContentType.event}></ConfirmationDialog>
         </>
     )
 }

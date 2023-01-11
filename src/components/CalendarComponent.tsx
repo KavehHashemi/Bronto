@@ -13,7 +13,7 @@ import interactionPlugin, {
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuid } from "uuid";
-import { ShowDialog, EventType, ContentType } from "../Types";
+import { EventType, ContentType } from "../Types";
 import "../style/CalendarComponent.css";
 import {
   editEvent,
@@ -21,17 +21,11 @@ import {
   fetchResources,
   createEventTypeFromEventApi,
   createEventTypeFromDateClick,
-  // getResourceFromResourceApi,
 } from "../FCWrapper";
 
 import { addDuration } from "../Utils";
-import EventDialog from "./EventDialog";
-import ResourcesDialog from "./ResourcesDialog";
-
-
-import Modal from './Dialog'
+import EntityDialog from './EntityDialog'
 import { useDialog } from "../Hooks";
-// import { Button } from "@mui/material";
 
 
 const CalendarComponent = () => {
@@ -77,13 +71,11 @@ const CalendarComponent = () => {
 
   const onDateClick = (e: DateClickArg) => {
     setCurrentEvent(createEventTypeFromDateClick(e));
-    //setIsNew(true);
     handleShowDialog(ContentType.event);
   };
 
   const onEventClick = (e: EventClickArg) => {
     setCurrentEvent(createEventTypeFromEventApi(e.event));
-    //setIsNew(false);
     handleShowDialog(ContentType.event);
   };
 
@@ -158,7 +150,7 @@ const CalendarComponent = () => {
       ></ResourcesDialog> */}
       {/* <Modal show={isShowingModal} handleShow={toggleModal}></Modal> */}
       {/* <Button onClick={toggleShow}>Show Dialog</Button> */}
-      <Modal show={show} handleShow={toggleShow} contentType={type} content={currentEvent} calendarRef={calendarRef}></Modal>
+      <EntityDialog show={show} handleShow={toggleShow} contentType={type} content={currentEvent} calendarRef={calendarRef}></EntityDialog>
     </div>
   );
 };
