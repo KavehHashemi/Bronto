@@ -5,18 +5,12 @@ import TextField from "@mui/material/TextField";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined"
 import IconButton from "@mui/material/IconButton";
-import { ContentType, ResourceType } from "../Types";
-import FullCalendar from "@fullcalendar/react";
+import { ContentType, ResourceType, SingleResourceComponentProps } from "../Types";
 import { resourceDB } from "../indexedDb/ResourcesDB";
 import { eventsDB } from "../indexedDb/EventsDB";
 import ConfirmationDialog from "./ConfirmationDialog";
 
-type props = {
-    resource: ResourceType;
-    calendarRef: React.RefObject<FullCalendar>
-}
-
-const SingleResourceComponent = ({ resource, calendarRef }: props) => {
+const SingleResourceComponent = ({ resource, calendarRef }: SingleResourceComponentProps) => {
     const [edited, setEdited] = useState<boolean>(false)
     const [singleResource, setSingleResource] = useState<ResourceType | null>(null)
     useEffect(() => {
@@ -35,10 +29,6 @@ const SingleResourceComponent = ({ resource, calendarRef }: props) => {
             setEdited(false)
         }
     };
-
-    useEffect(() => {
-
-    }, [singleResource?.title])
 
     const deleteResource = async () => {
         if (singleResource) {

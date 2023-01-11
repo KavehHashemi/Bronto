@@ -3,15 +3,9 @@ import Header from '@mui/material/DialogTitle'
 import Content from '@mui/material/DialogContent'
 import Action from '@mui/material/DialogActions'
 import Button from '@mui/material/Button'
-import { ContentType } from '../Types';
-type props = {
-    title: string;
-    type: ContentType;
-    open: boolean;
-    openHandler: React.Dispatch<React.SetStateAction<boolean>>
-    confirmation: React.Dispatch<React.SetStateAction<boolean>>
-}
-const ConfirmationDialog = ({ open, openHandler, title, type, confirmation }: props) => {
+import { ConfirmationDialogProps } from '../Types';
+
+const ConfirmationDialog = ({ open, openHandler, title, type, confirmation }: ConfirmationDialogProps) => {
     if (!open) return null
     return (
         <Dialog fullWidth open={open} onClose={() => openHandler(false)}>

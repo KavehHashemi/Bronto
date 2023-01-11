@@ -22,56 +22,38 @@ export type Operation = {
   title: string;
 };
 
-export type ShowDialog = {
-  [id: string]: boolean;
-};
-
 export type Duration = {
   hours: number;
   minutes: number;
 };
 
-export type EventDialogProps = {
-  open: ShowDialog;
-  //openHandler: (id: string, show: boolean) => void;
-  openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
-  calendarRef: React.RefObject<FullCalendar>;
+export type EventComponentProps = {
   event: EventType;
-  isNew: boolean;
-};
-
-export type DeleteResourceDialogProps = {
-  resourceTitle: string;
-  index?: number;
-  // open: ShowDialog;
-  // openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
-  confirmDelete: (idx: number) => void;
-  //entity: EventType | Resource;
-  //id: string;
-  //openHandler: (id: string, show: boolean) => void;
-  //calendarRef: React.RefObject<FullCalendar>;
-};
-
-export type DeleteEventDialogProps = {
-  eventTitle: string;
-  open: ShowDialog;
-  openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
-  confirmDelete: () => void;
-};
-
-export type ResourceDialogProps = {
-  open: ShowDialog;
-  //openHandler: (id: string, show: boolean) => void;
-  openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
   calendarRef: React.RefObject<FullCalendar>;
-  //array: Resource[];
+  isNew: boolean;
+  open: boolean;
+  openHandler: () => void;
+};
+
+export type ResourceComponentProps = {
+  calendarRef: React.RefObject<FullCalendar>;
+  open: boolean;
+  openHandler: () => void;
 };
 
 export type ResourceListComponentProps = {
-  // open: ShowDialog;
-  // openHandler: React.Dispatch<React.SetStateAction<ShowDialog>>;
   resources: ResourceType[];
   calendarRef: React.RefObject<FullCalendar>;
+};
+
+export type SingleResourceComponentProps = {
+  resource: ResourceType;
+  calendarRef: React.RefObject<FullCalendar>;
+};
+
+export type InfoComponentProps = {
+  open: boolean;
+  openHandler: () => void;
 };
 
 export type DialogProps = {
@@ -80,6 +62,20 @@ export type DialogProps = {
   calendarRef: React.RefObject<FullCalendar>;
   show: boolean;
   handleShow: () => void;
+};
+
+export type ConfirmationDialogProps = {
+  title: string;
+  type: ContentType;
+  open: boolean;
+  openHandler: React.Dispatch<React.SetStateAction<boolean>>;
+  confirmation: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export type DateComponentProps = {
+  calendarRef: React.RefObject<FullCalendar>;
+  open: boolean;
+  openHandler: () => void;
 };
 
 export enum ContentType {

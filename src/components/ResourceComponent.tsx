@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ResourceType } from "../Types";
+import { ResourceType, ResourceComponentProps } from "../Types";
 import "../style/ResourcesDialog.css";
 import CloseIcon from "@mui/icons-material/Close";
 import { addResource, getResourceFromResourceApi } from "../FCWrapper";
@@ -10,13 +10,8 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import ResourceListComponent from "./ResourceListComponent";
-import FullCalendar from "@fullcalendar/react";
-type props = {
-    calendarRef: React.RefObject<FullCalendar>;
-    open: boolean;
-    openHandler: () => void
-}
-const ResourceComponent = ({ calendarRef, open, openHandler }: props) => {
+
+const ResourceComponent = ({ calendarRef, open, openHandler }: ResourceComponentProps) => {
     const [array, setArray] = useState<ResourceType[]>(
         getResourceFromResourceApi(calendarRef.current?.getApi())
     );

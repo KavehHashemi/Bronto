@@ -42,23 +42,11 @@ const CalendarComponent = () => {
     fetchEvents(calendarApi);
   }, [calendarRef]);
 
-  // const [openDialog, setOpenDialog] = useState<ShowDialog>({
-  //   eventDialog: false,
-  //   deleteEventDialog: false,
-  //   resourceDialog: false,
-  //   deleteResourceDialog: false
-  // });
-
-  // const handleShowDialog = (id: string, show: boolean) => {
-  //   setOpenDialog({ ...openDialog, [id]: show });
-  // };
-
   const handleShowDialog = (id: ContentType) => {
     setType(id);
     toggleShow()
   };
 
-  // const [isNew, setIsNew] = useState<boolean>(true);
   const [currentEvent, setCurrentEvent] = useState<EventType>({
     id: uuid(),
     title: "",
@@ -135,21 +123,6 @@ const CalendarComponent = () => {
         defaultTimedEventDuration="00:30"
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
       />
-      {/* <EventDialog
-        open={openDialog}
-        openHandler={setOpenDialog}
-        calendarRef={calendarRef}
-        event={currentEvent}
-        isNew={isNew}
-      ></EventDialog>
-      <ResourcesDialog
-        open={openDialog}
-        openHandler={setOpenDialog}
-        calendarRef={calendarRef}
-      //array={getResourceFromResourceApi(calendarRef.current?.getApi())}
-      ></ResourcesDialog> */}
-      {/* <Modal show={isShowingModal} handleShow={toggleModal}></Modal> */}
-      {/* <Button onClick={toggleShow}>Show Dialog</Button> */}
       <EntityDialog show={show} handleShow={toggleShow} contentType={type} content={currentEvent} calendarRef={calendarRef}></EntityDialog>
     </div>
   );

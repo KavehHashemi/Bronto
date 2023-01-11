@@ -17,16 +17,10 @@ import Chip from "@mui/material/Chip";
 import InputLabel from "@mui/material/InputLabel";
 import { calculateEndFromDuration, calculateEventsDuration } from "../Utils";
 import { eventsDB } from "../indexedDb/EventsDB";
-import FullCalendar from "@fullcalendar/react";
+import { EventComponentProps } from "../Types";
 import ConfirmationDialog from "./ConfirmationDialog";
-type props = {
-    event: EventType
-    calendarRef: React.RefObject<FullCalendar>;
-    isNew: boolean;
-    open: boolean;
-    openHandler: () => void
-}
-const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: props) => {
+
+const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventComponentProps) => {
     const ops = Data.operations;
     const [currentEvent, setCurrentEvent] = useState<EventType>(event);
     const [operations, setOperations] = useState<string[]>([]);

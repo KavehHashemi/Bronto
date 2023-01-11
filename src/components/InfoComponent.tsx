@@ -1,9 +1,6 @@
 import Dialog from '@mui/material/Dialog'
-type props = {
-    open: boolean;
-    openHandler: () => void
-}
-const InfoComponent = ({ open, openHandler }: props) => {
+import { InfoComponentProps } from "../Types";
+const InfoComponent = ({ open, openHandler }: InfoComponentProps) => {
     return (
         <Dialog fullWidth open={open} onClose={openHandler}>InfoComponent</Dialog>
     )
