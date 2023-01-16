@@ -79,6 +79,10 @@ const CalendarComponent = () => {
     handleShowDialog(ContentType.resource);
   };
 
+  const openInfo = () => {
+    handleShowDialog(ContentType.info);
+  }
+
   const renderEventContent = (e: EventContentArg) => {
     return (
       <div>
@@ -102,13 +106,16 @@ const CalendarComponent = () => {
         eventDrop={(e) => onDrop(e)}
         eventResize={(e) => onResize(e)}
         customButtons={{
-          addResource: {
+          resource: {
             text: "Resources",
             click: manageResources,
-          },
+          }, info: {
+            text: "?",
+            click: openInfo
+          }
         }}
         headerToolbar={{
-          left: "addResource",
+          left: "resource,info",
           center: "title",
           right: "prev,next,today",
         }}
