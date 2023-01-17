@@ -9,7 +9,7 @@ import { ContentType, Operation } from "../Types";
 import ConfirmationDialog from "./ConfirmationDialog";
 import { SingleOperationComponentProps } from '../Types'
 import { operationsDB } from "../indexedDb/OperationsDB";
-import { eventsDB } from "../indexedDb/EventsDB";
+import { useDelete } from "../Hooks";
 
 const SingleOperationComponent = ({ operation }: SingleOperationComponentProps) => {
     const [edited, setEdited] = useState<boolean>(false)
@@ -30,29 +30,13 @@ const SingleOperationComponent = ({ operation }: SingleOperationComponentProps) 
 
     const deleteOperation = async () => {
         if (singleOperation) {
-            // let evs = await eventsDB.events.filter((ev)=>{                
-            //     for(let op in ev.operations){
-            //        (ev.operations[op] === singleOperation.title)
-            //     }
-            // })
             await operationsDB.operations.delete(singleOperation.id);
             setSingleOperation(null);
         }
     };
 
-    /////////
-    const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
-    const [ok, setOk] = useState<boolean>(false)
-    const handleDelete = () => {
-        setShowDeleteDialog(true)
-    }
-    useEffect(() => {
-        if (ok) {
-            deleteOperation()
-            setOk(false)
-        }
-    }, [ok])
-    ////////
+    const deleteDialog = useDelete(deleteOperation)
+
     if (!singleOperation) return null
     return (
         <div className="existing-fields">
@@ -73,11 +57,11 @@ const SingleOperationComponent = ({ operation }: SingleOperationComponentProps) 
                 <IconButton disabled={!edited} color="info" onClick={editOperation}>
                     <SaveIcon></SaveIcon>
                 </IconButton>
-                <IconButton color="error" onClick={handleDelete}>
+                <IconButton color="error" onClick={deleteDialog.deleteHandler}>
                     <DeleteIcon></DeleteIcon>
                 </IconButton>
             </div>
-            <ConfirmationDialog open={showDeleteDialog} openHandler={setShowDeleteDialog} confirmation={setOk} title={singleOperation.title} type={ContentType.operation}></ConfirmationDialog>
+            <ConfirmationDialog open={deleteDialog.open} openHandler={deleteDialog.openHandler} confirmation={deleteDialog.okHandler} title={singleOperation.title} type={ContentType.operation}></ConfirmationDialog>
         </div >
     )
 }

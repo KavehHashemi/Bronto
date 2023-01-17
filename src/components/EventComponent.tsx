@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { ContentType, Duration, EventType, Operation } from "../Types";
-import Data from "../data/sampleData.json";
 import "../style/EventDialog.css";
 import Dialog from "@mui/material/Dialog"
 import Header from "@mui/material/DialogTitle";
@@ -20,6 +19,7 @@ import { eventsDB } from "../indexedDb/EventsDB";
 import { EventComponentProps } from "../Types";
 import ConfirmationDialog from "./ConfirmationDialog";
 import { operationsDB } from "../indexedDb/OperationsDB";
+import { useDelete } from "../Hooks";
 
 
 const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventComponentProps) => {
@@ -94,17 +94,19 @@ const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventC
     };
 
     ////////////////////////
-    const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
-    const [ok, setOk] = useState<boolean>(false)
-    const handleDelete = () => {
-        setShowDeleteDialog(true)
-    }
-    useEffect(() => {
-        if (ok) {
-            deleteEvent()
-            setOk(false)
-        }
-    }, [ok])
+    //const [showDeleteDialog, setShowDeleteDialog, setOk, handleDelete] = useDelete(deleteEvent)
+    const deleteDialog = useDelete(deleteEvent)
+    // const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
+    // const [ok, setOk] = useState<boolean>(false)
+    // const handleDelete = () => {
+    //     setShowDeleteDialog(true)
+    // }
+    // useEffect(() => {
+    //     if (ok) {
+    //         deleteEvent()
+    //         setOk(false)
+    //     }
+    // }, [ok])
     ////////////////////
 
     const handleOperationChange = (
@@ -232,7 +234,7 @@ const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventC
                             <Button
                                 color="error"
                                 variant="text"
-                                onClick={handleDelete}
+                                onClick={deleteDialog.deleteHandler}
                             >
                                 Delete Event
                             </Button>
@@ -248,7 +250,7 @@ const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventC
                     </div>
                 </Actions>
             </Dialog>
-            <ConfirmationDialog open={showDeleteDialog} openHandler={setShowDeleteDialog} confirmation={setOk} title={currentEvent.title} type={ContentType.event}></ConfirmationDialog>
+            <ConfirmationDialog open={deleteDialog.open} openHandler={deleteDialog.openHandler} confirmation={deleteDialog.okHandler} title={currentEvent.title} type={ContentType.event}></ConfirmationDialog>
         </>
     )
 }

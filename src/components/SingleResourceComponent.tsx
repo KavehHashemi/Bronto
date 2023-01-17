@@ -9,6 +9,7 @@ import { ContentType, ResourceType, SingleResourceComponentProps } from "../Type
 import { resourceDB } from "../indexedDb/ResourcesDB";
 import { eventsDB } from "../indexedDb/EventsDB";
 import ConfirmationDialog from "./ConfirmationDialog";
+import { useDelete } from "../Hooks";
 
 const SingleResourceComponent = ({ resource, calendarRef }: SingleResourceComponentProps) => {
     const [edited, setEdited] = useState<boolean>(false)
@@ -48,19 +49,7 @@ const SingleResourceComponent = ({ resource, calendarRef }: SingleResourceCompon
         }
     };
 
-    /////////
-    const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
-    const [ok, setOk] = useState<boolean>(false)
-    const handleDelete = () => {
-        setShowDeleteDialog(true)
-    }
-    useEffect(() => {
-        if (ok) {
-            deleteResource()
-            setOk(false)
-        }
-    }, [ok])
-    ////////
+    const deleteDialog = useDelete(deleteResource)
 
     if (!singleResource) return null
     return (
@@ -82,11 +71,11 @@ const SingleResourceComponent = ({ resource, calendarRef }: SingleResourceCompon
                 <IconButton disabled={!edited} color="info" onClick={editResource}>
                     <SaveIcon></SaveIcon>
                 </IconButton>
-                <IconButton color="error" onClick={handleDelete}>
+                <IconButton color="error" onClick={deleteDialog.deleteHandler}>
                     <DeleteIcon></DeleteIcon>
                 </IconButton>
             </div>
-            <ConfirmationDialog open={showDeleteDialog} openHandler={setShowDeleteDialog} confirmation={setOk} title={singleResource.title} type={ContentType.resource}></ConfirmationDialog>
+            <ConfirmationDialog open={deleteDialog.open} openHandler={deleteDialog.openHandler} confirmation={deleteDialog.okHandler} title={singleResource.title} type={ContentType.resource}></ConfirmationDialog>
         </div >
     )
 }
