@@ -15,7 +15,6 @@ const ConfirmationDialog = ({ open, openHandler, title, type, confirmation }: Co
                 <Button color="inherit" onClick={() => openHandler(false)}>Cancel</Button>
                 <Button variant='contained' color='error' onClick={() => { confirmation(true); openHandler(false) }}>Delete</Button>
             </Action>
-
         </Dialog>
     )
 }

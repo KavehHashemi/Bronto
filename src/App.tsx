@@ -2,9 +2,6 @@
 import "./App.css";
 import CalendarComponent from "./components/CalendarComponent";
 
-
-
-
 const App = () => {
   return <CalendarComponent />
 };

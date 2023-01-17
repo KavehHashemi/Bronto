@@ -11,7 +11,7 @@ import moment, { Moment } from "moment"
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateComponentProps } from "../Types";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 
 const DateComponent = ({ open, openHandler, calendarRef }: DateComponentProps) => {
