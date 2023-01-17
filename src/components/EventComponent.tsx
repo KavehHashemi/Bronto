@@ -20,6 +20,7 @@ import { EventComponentProps } from "../Types";
 import ConfirmationDialog from "./ConfirmationDialog";
 import { operationsDB } from "../indexedDb/OperationsDB";
 import { useDelete } from "../Hooks";
+import { addEvent, deleteEvent, editEvent } from "../FCWrapper";
 
 
 const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventComponentProps) => {
@@ -69,45 +70,34 @@ const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventC
         });
     }, [duration]);
 
-    const addEvent = async () => {
-        if (currentEvent.title !== "" && currentEvent.start !== currentEvent.end) {
-            let calendarApi = calendarRef.current?.getApi();
-            isNew
-                ? await eventsDB.events.add(currentEvent)
-                : await eventsDB.events.update(currentEvent.id, currentEvent);
-            calendarApi?.getEventById(currentEvent.id)?.remove();
-            calendarApi?.addEvent(currentEvent);
+    const createEvent = async () => {
+        if (currentEvent.title !== "" && calendarRef.current?.getApi()) {
+            await addEvent(currentEvent, calendarRef.current?.getApi())
             openHandler();
         }
     };
+
+    const changeEvent = async () => {
+        if (currentEvent.title !== "" && calendarRef.current?.getApi()) {
+            await editEvent(currentEvent, calendarRef.current?.getApi())
+            openHandler();
+        }
+    }
 
     const cancelEvent = () => {
         setCurrentEvent(event);
         openHandler()
     };
 
-    const deleteEvent = async () => {
-        await eventsDB.events.delete(currentEvent.id);
-        let calendarApi = calendarRef.current?.getApi();
-        calendarApi?.getEventById(currentEvent.id)?.remove();
-        openHandler()
+    const removeEvent = async () => {
+        if (currentEvent.title !== "" && calendarRef.current?.getApi()) {
+            await deleteEvent(currentEvent, calendarRef.current?.getApi())
+            openHandler()
+        }
     };
 
-    ////////////////////////
-    //const [showDeleteDialog, setShowDeleteDialog, setOk, handleDelete] = useDelete(deleteEvent)
-    const deleteDialog = useDelete(deleteEvent)
-    // const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
-    // const [ok, setOk] = useState<boolean>(false)
-    // const handleDelete = () => {
-    //     setShowDeleteDialog(true)
-    // }
-    // useEffect(() => {
-    //     if (ok) {
-    //         deleteEvent()
-    //         setOk(false)
-    //     }
-    // }, [ok])
-    ////////////////////
+    const deleteDialog = useDelete(removeEvent)
+
 
     const handleOperationChange = (
         event: SelectChangeEvent<typeof operations>
@@ -244,9 +234,10 @@ const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventC
                         <Button color="inherit" variant="text" onClick={cancelEvent}>
                             Cancel
                         </Button>
-                        <Button color="primary" variant="contained" onClick={addEvent}>
-                            {isNew ? "Add" : "Edit"}
-                        </Button>
+                        {isNew ? <Button color="primary" variant="contained" onClick={createEvent}>Add
+                        </Button> : <Button color="primary" variant="contained" onClick={changeEvent}>Edit
+                        </Button>}
+
                     </div>
                 </Actions>
             </Dialog>

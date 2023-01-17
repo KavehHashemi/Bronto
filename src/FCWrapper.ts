@@ -70,31 +70,6 @@ export const checkDB = async () => {
   }
 };
 
-// export const addEventsToCalendar = async (calendarApi: CalendarApi) => {
-//   const db = await eventsDB.events.toArray();
-//   for (let ev in db) {
-//     let calendarEvent: EventInput = {
-//       id: db[ev].id,
-//       title: db[ev].title,
-//       start: db[ev].start,
-//       end: db[ev].end,
-//       resourceId: db[ev].resourceId,
-//       extendedProps: {
-//         description: db[ev].description,
-//         operations: db[ev].operations,
-//       },
-//       allDay: false,
-//       durationEditable: true,
-//       overlap: false,
-//       resourceEditable: false,
-//       editable: true,
-//       startEditable: true,
-//       interactive: true,
-//     };
-//     calendarApi?.addEvent(calendarEvent);
-//   }
-// };
-
 export const fetchEvents = async (calendarApi?: CalendarApi) => {
   let residentEvents: number = await eventsDB.events.count();
   if (residentEvents === 0) {
@@ -108,18 +83,6 @@ export const fetchEvents = async (calendarApi?: CalendarApi) => {
   }
 };
 
-// export const createResource = async (resourceId: string | undefined) => {
-//   const db = await resourceDB.resources.toArray();
-//   let calendarResource: ResourceInput;
-//   for (let rsrc in db) {
-//     if (db[rsrc].id === resourceId) {
-//       console.log("found");
-//       calendarResource = { id: resourceId, title: db[rsrc].title };
-//       return calendarResource;
-//     }
-//   }
-// };
-
 export const loadSampleEvents = async (event: any) => {
   let a: EventType = {
     id: uuid(),
@@ -131,12 +94,19 @@ export const loadSampleEvents = async (event: any) => {
     operations: [],
   };
   await eventsDB.events.add(a);
-
-  // await addEventToDB(a);
 };
 
-export const addEventToDB = async (event: EventType) => {};
-export const editEvent = async (
+export const addEvent = async (event: EventType, calendarApi: CalendarApi) => {
+  await eventsDB.events.add(event);
+  calendarApi?.addEvent(event);
+};
+export const editEvent = async (event: EventType, calendarApi: CalendarApi) => {
+  await eventsDB.events.update(event.id, event);
+  calendarApi?.getEventById(event.id)?.remove();
+  calendarApi?.addEvent(event);
+};
+
+export const moveEvent = async (
   calendarRef: React.RefObject<FullCalendar>,
   e: EventDropArg | EventResizeDoneArg
 ) => {
@@ -149,7 +119,13 @@ export const editEvent = async (
     createEventTypeFromEventApi(e.event)
   );
 };
-export const deleteEvent = async () => {};
+export const deleteEvent = async (
+  event: EventType,
+  calendarApi: CalendarApi
+) => {
+  await eventsDB.events.delete(event.id);
+  calendarApi?.getEventById(event.id)?.remove();
+};
 
 ///RESOURCES
 export const fetchResources = async (calendarApi?: CalendarApi) => {
@@ -161,7 +137,6 @@ export const fetchResources = async (calendarApi?: CalendarApi) => {
         createdAt: new Date().valueOf(),
       };
       await resourceDB.resources.add(sampleResource);
-      // await resourceDB.resources.add(sampleData.resources[rsrc]);
     }
   }
   const db = await resourceDB.resources.toArray();
@@ -199,8 +174,30 @@ export const getResourceFromResourceApi = (
     }
   return resourcesArray;
 };
-export const editResource = async () => {};
-export const deleteResource = async () => {};
+export const editResource = async (
+  singleResource: ResourceType,
+  calendarApi: CalendarApi
+) => {
+  await resourceDB.resources.update(singleResource.id, singleResource);
+  calendarApi?.getResourceById(singleResource.id)?.remove();
+  calendarApi?.addResource(singleResource);
+};
+export const deleteResource = async (
+  singleResource: ResourceType,
+  calendarApi: CalendarApi
+) => {
+  if (singleResource) {
+    let events = await eventsDB.events
+      .where("resourceId")
+      .equals(singleResource.id)
+      .toArray();
+    for (let ev in events) {
+      await eventsDB.events.delete(events[ev].id);
+    }
+    await resourceDB.resources.delete(singleResource.id);
+    calendarApi.getResourceById(singleResource.id)?.remove();
+  }
+};
 ///OPERATIONS
 export const fetchOperations = async () => {
   let residentOperations: number = await operationsDB.operations.count();

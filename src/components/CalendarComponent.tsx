@@ -16,7 +16,7 @@ import { v4 as uuid } from "uuid";
 import { EventType, ContentType } from "../Types";
 import "../style/CalendarComponent.css";
 import {
-  editEvent,
+  moveEvent,
   fetchEvents,
   fetchResources,
   createEventTypeFromEventApi,
@@ -69,11 +69,11 @@ const CalendarComponent = () => {
   };
 
   const onDrop = async (e: EventDropArg) => {
-    await editEvent(calendarRef, e);
+    await moveEvent(calendarRef, e);
   };
 
   const onResize = async (e: EventResizeDoneArg) => {
-    await editEvent(calendarRef, e);
+    await moveEvent(calendarRef, e);
   };
 
   const manageResources = () => {

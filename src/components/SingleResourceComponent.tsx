@@ -6,9 +6,8 @@ import SaveIcon from "@mui/icons-material/SaveOutlined";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined"
 import IconButton from "@mui/material/IconButton";
 import { ContentType, ResourceType, SingleResourceComponentProps } from "../Types";
-import { resourceDB } from "../indexedDb/ResourcesDB";
-import { eventsDB } from "../indexedDb/EventsDB";
 import ConfirmationDialog from "./ConfirmationDialog";
+import { deleteResource, editResource } from "../FCWrapper";
 import { useDelete } from "../Hooks";
 
 const SingleResourceComponent = ({ resource, calendarRef }: SingleResourceComponentProps) => {
@@ -18,38 +17,20 @@ const SingleResourceComponent = ({ resource, calendarRef }: SingleResourceCompon
         setSingleResource(resource)
     }, [resource])
 
-    const editResource = async () => {
-        if (singleResource) {
-            let calendarApi = calendarRef.current?.getApi();
-            await resourceDB.resources.update(
-                singleResource.id,
-                singleResource
-            );
-            calendarApi?.getResourceById(singleResource.id)?.remove();
-            calendarApi?.addResource(singleResource);
+    const changeResource = async () => {
+        if (singleResource && calendarRef.current?.getApi()) {
+            editResource(singleResource, calendarRef.current?.getApi())
             setEdited(false)
         }
     };
 
-    const deleteResource = async () => {
-        if (singleResource) {
-            let events = await eventsDB.events
-                .where("resourceId")
-                .equals(singleResource.id)
-                .toArray();
-            for (let ev in events) {
-                await eventsDB.events.delete(events[ev].id);
-            }
-            await resourceDB.resources.delete(singleResource.id);
-            calendarRef.current
-                ?.getApi()
-                .getResourceById(singleResource.id)
-                ?.remove();
-            setSingleResource(null);
-        }
-    };
+    const removeResource = async () => {
+        if (singleResource && calendarRef.current?.getApi())
+            deleteResource(singleResource, calendarRef.current?.getApi())
+        setSingleResource(null);
+    }
 
-    const deleteDialog = useDelete(deleteResource)
+    const deleteDialog = useDelete(removeResource)
 
     if (!singleResource) return null
     return (
@@ -68,7 +49,7 @@ const SingleResourceComponent = ({ resource, calendarRef }: SingleResourceCompon
                 ></TextField>
             </div>
             <div className="buttons">
-                <IconButton disabled={!edited} color="info" onClick={editResource}>
+                <IconButton disabled={!edited} color="info" onClick={changeResource}>
                     <SaveIcon></SaveIcon>
                 </IconButton>
                 <IconButton color="error" onClick={deleteDialog.deleteHandler}>
