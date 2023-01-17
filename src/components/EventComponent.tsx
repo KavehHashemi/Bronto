@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { ContentType, Duration, EventType } from "../Types";
+import { ContentType, Duration, EventType, Operation } from "../Types";
 import Data from "../data/sampleData.json";
 import "../style/EventDialog.css";
 import Dialog from "@mui/material/Dialog"
@@ -19,18 +19,39 @@ import { calculateEndFromDuration, calculateEventsDuration } from "../Utils";
 import { eventsDB } from "../indexedDb/EventsDB";
 import { EventComponentProps } from "../Types";
 import ConfirmationDialog from "./ConfirmationDialog";
+import { operationsDB } from "../indexedDb/OperationsDB";
+
 
 const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventComponentProps) => {
-    const ops = Data.operations;
+    const [ops, setOps] = useState<Operation[]>([])
     const [currentEvent, setCurrentEvent] = useState<EventType>(event);
     const [operations, setOperations] = useState<string[]>([]);
     const [duration, setDuration] = useState<Duration>({ hours: 0, minutes: 0 });
 
     useEffect(() => {
+        (async () => {
+            setOps(await operationsDB.operations.toArray());
+        })()
+    }, [calendarRef]);
+
+    const checkOperationAvailability = () => {
+        let eventsOps = event.operations
+        let validOps = []
+        for (let i = 0; i < eventsOps.length; i++) {
+            for (let j = 0; j < ops.length; j++) {
+                if (eventsOps[i] === ops[j].title) {
+                    validOps.push(eventsOps[i])
+                }
+            }
+        }
+        return validOps;
+    }
+
+    useEffect(() => {
         setCurrentEvent(event);
-        setOperations(event.operations);
+        setOperations(checkOperationAvailability());
         setDuration(calculateEventsDuration(event));
-    }, [event]);
+    }, [ops]);
 
     useEffect(() => {
         console.log();
@@ -71,6 +92,7 @@ const EventComponent = ({ event, calendarRef, isNew, open, openHandler }: EventC
         calendarApi?.getEventById(currentEvent.id)?.remove();
         openHandler()
     };
+
     ////////////////////////
     const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false)
     const [ok, setOk] = useState<boolean>(false)

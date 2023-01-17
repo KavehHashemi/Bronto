@@ -3,6 +3,7 @@ import EventComponent from "./EventComponent";
 import ResourceComponent from "./ResourceComponent";
 import DateComponent from "./DateComponent";
 import InfoComponent from "./InfoComponent";
+import OperationComponent from "./OperationComponent";
 
 
 const EntityDialog = ({ show, handleShow, contentType, content, calendarRef }: DialogProps) => {
@@ -16,6 +17,8 @@ const EntityDialog = ({ show, handleShow, contentType, content, calendarRef }: D
             return <DateComponent open={show} openHandler={handleShow} calendarRef={calendarRef}></DateComponent>
         case ContentType.info:
             return <InfoComponent open={show} openHandler={handleShow}></InfoComponent>
+        case ContentType.operation:
+            return <OperationComponent open={show} openHandler={handleShow}></OperationComponent>
         default:
             return null;
     }

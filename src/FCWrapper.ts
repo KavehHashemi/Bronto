@@ -1,6 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { eventsDB } from "./indexedDb/EventsDB";
-import { EventType, ResourceType } from "./Types";
+import { EventType, Operation, ResourceType } from "./Types";
 import { addDuration, addHours, getRandomColor } from "./Utils";
 import sampleData from "./data/sampleData.json";
 import FullCalendar, {
@@ -11,6 +11,7 @@ import FullCalendar, {
 } from "@fullcalendar/react";
 import { resourceDB } from "./indexedDb/ResourcesDB";
 import { DateClickArg, EventResizeDoneArg } from "@fullcalendar/interaction";
+import { operationsDB } from "./indexedDb/OperationsDB";
 
 ///EVENTS
 
@@ -201,4 +202,23 @@ export const getResourceFromResourceApi = (
 export const editResource = async () => {};
 export const deleteResource = async () => {};
 ///OPERATIONS
-export const fetchOperations = async () => {};
+export const fetchOperations = async () => {
+  let residentOperations: number = await operationsDB.operations.count();
+  if (residentOperations === 0) {
+    for (let op in sampleData.operations) {
+      let sampleOperations: Operation = {
+        ...sampleData.operations[op],
+        createdAt: new Date().valueOf(),
+      };
+      await operationsDB.operations.add(sampleOperations);
+    }
+  }
+};
+export const addOperation = async (operationName: string) => {
+  const newOperation: Operation = {
+    id: uuid(),
+    title: operationName,
+    createdAt: new Date().valueOf(),
+  };
+  await operationsDB.operations.add(newOperation);
+};

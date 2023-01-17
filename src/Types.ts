@@ -8,6 +8,7 @@ export type EventType = {
   end: Date;
   description: string;
   operations: string[];
+  //operations: Operation[];
 };
 
 export type ResourceType = {
@@ -20,6 +21,7 @@ export type ResourceType = {
 export type Operation = {
   id: string;
   title: string;
+  createdAt: number;
 };
 
 export type Duration = {
@@ -56,6 +58,19 @@ export type InfoComponentProps = {
   openHandler: () => void;
 };
 
+export type OperationComponentProps = {
+  open: boolean;
+  openHandler: () => void;
+};
+
+export type OperationListComponentProps = {
+  operations: Operation[];
+};
+
+export type SingleOperationComponentProps = {
+  operation: Operation;
+};
+
 export type DialogProps = {
   contentType: ContentType;
   content: EventType | string;
@@ -83,4 +98,5 @@ export enum ContentType {
   resource = "resource",
   date = "date",
   info = "info",
+  operation = "operation",
 }

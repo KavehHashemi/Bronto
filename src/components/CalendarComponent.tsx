@@ -21,6 +21,7 @@ import {
   fetchResources,
   createEventTypeFromEventApi,
   createEventTypeFromDateClick,
+  fetchOperations,
 } from "../FCWrapper";
 
 import { addDuration } from "../Utils";
@@ -39,6 +40,7 @@ const CalendarComponent = () => {
     let calendarApi = calendarRef.current?.getApi();
     fetchResources(calendarApi);
     fetchEvents(calendarApi);
+    fetchOperations()
   }, [calendarRef]);
 
   const handleShowDialog = (id: ContentType) => {
@@ -78,6 +80,10 @@ const CalendarComponent = () => {
     handleShowDialog(ContentType.resource);
   };
 
+  const manageOperations = () => {
+    handleShowDialog(ContentType.operation)
+  }
+
   const openInfo = () => {
     handleShowDialog(ContentType.info);
   }
@@ -95,6 +101,8 @@ const CalendarComponent = () => {
       </div>
     );
   };
+
+
 
   return (
     <div className="main-container">
@@ -120,10 +128,14 @@ const CalendarComponent = () => {
           goto: {
             text: "Go to",
             click: openDate
+          },
+          operation: {
+            text: "Operations",
+            click: manageOperations
           }
         }}
         headerToolbar={{
-          left: "resource,info",
+          left: "resource,operation,info",
           center: "title",
           right: "goto,prev,next,today",
 
