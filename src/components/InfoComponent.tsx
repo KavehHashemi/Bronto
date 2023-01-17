@@ -20,6 +20,8 @@ const InfoComponent = ({ open, openHandler }: InfoComponentProps) => {
             <Content style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <div>- Click on any date to add a new event</div>
                 <div>- Click on any event to edit or delete the event</div>
+                <div>- Move the start or the end of an event to edit its start or end time</div>
+                <div>- Drag and drop an event to change its start and end time</div>
                 <div>- Click on "Resources" button to add, edit, or delete resources</div>
             </Content>
             <Action>

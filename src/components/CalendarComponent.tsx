@@ -29,9 +29,8 @@ import { useDialog } from "../Hooks";
 
 
 const CalendarComponent = () => {
-
-  const [show, toggleShow] = useDialog()
-  const [type, setType] = useState<ContentType>(ContentType.info)
+  const [showDialog, toggleShowDialog] = useDialog()
+  const [dialogType, setDialogType] = useState<ContentType>(ContentType.info)
 
   const plugins = [resourceTimelinePlugin, interactionPlugin];
   const calendarRef = useRef<FullCalendar>(null);
@@ -43,8 +42,8 @@ const CalendarComponent = () => {
   }, [calendarRef]);
 
   const handleShowDialog = (id: ContentType) => {
-    setType(id);
-    toggleShow()
+    setDialogType(id);
+    toggleShowDialog()
   };
 
   const [currentEvent, setCurrentEvent] = useState<EventType>({
@@ -68,11 +67,11 @@ const CalendarComponent = () => {
   };
 
   const onDrop = async (e: EventDropArg) => {
-    editEvent(calendarRef, e);
+    await editEvent(calendarRef, e);
   };
 
   const onResize = async (e: EventResizeDoneArg) => {
-    editEvent(calendarRef, e);
+    await editEvent(calendarRef, e);
   };
 
   const manageResources = () => {
@@ -83,9 +82,13 @@ const CalendarComponent = () => {
     handleShowDialog(ContentType.info);
   }
 
+  const openDate = () => {
+    handleShowDialog(ContentType.date)
+  }
+
   const renderEventContent = (e: EventContentArg) => {
     return (
-      <div>
+      <div style={{ paddingInline: "0.3rem" }}>
         <i>{e.event.title}</i>
         <i> - </i>
         <i>{e.event.extendedProps.description}</i>
@@ -109,15 +112,21 @@ const CalendarComponent = () => {
           resource: {
             text: "Resources",
             click: manageResources,
-          }, info: {
+          },
+          info: {
             text: "?",
             click: openInfo
+          },
+          goto: {
+            text: "Go to",
+            click: openDate
           }
         }}
         headerToolbar={{
           left: "resource,info",
           center: "title",
-          right: "prev,next,today",
+          right: "goto,prev,next,today",
+
         }}
         editable={true}
         droppable={true}
@@ -130,7 +139,7 @@ const CalendarComponent = () => {
         defaultTimedEventDuration="00:30"
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
       />
-      <EntityDialog show={show} handleShow={toggleShow} contentType={type} content={currentEvent} calendarRef={calendarRef}></EntityDialog>
+      <EntityDialog show={showDialog} handleShow={toggleShowDialog} contentType={dialogType} content={currentEvent} calendarRef={calendarRef}></EntityDialog>
     </div>
   );
 };
