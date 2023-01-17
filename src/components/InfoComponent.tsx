@@ -23,6 +23,7 @@ const InfoComponent = ({ open, openHandler }: InfoComponentProps) => {
                 <div>- Move the start or the end of an event to edit its start or end time</div>
                 <div>- Drag and drop an event to change its start and end time</div>
                 <div>- Click on "Resources" button to add, edit, or delete resources</div>
+                <div>- Click on "Operations" button to add, edit, or delete operations</div>
             </Content>
             <Action>
                 <Button onClick={openHandler}>Close</Button>
