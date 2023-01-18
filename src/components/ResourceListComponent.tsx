@@ -20,6 +20,7 @@ const ResourceListComponent = ({
       <SingleResourceComponent resource={currentResources[i]} calendarRef={calendarRef} key={currentResources[i].id}></SingleResourceComponent>
     );
   }
+
   return <>{resourceElements}</>;
 };
 

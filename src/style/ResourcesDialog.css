@@ -22,7 +22,6 @@ input[type="text"] {
   display: flex;
   justify-content: space-between;
 }
-
 .buttons {
   display: flex;
   justify-content: flex-end;
@@ -30,4 +29,7 @@ input[type="text"] {
 .buttons > button {
   font-size: small !important;
   font-weight: lighter !important;
+}
+.css-3bmhjh-MuiPaper-root-MuiPopover-paper {
+  border-radius: 8px !important;
 }

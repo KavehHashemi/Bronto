@@ -138,7 +138,6 @@ const CalendarComponent = () => {
           left: "resource,operation,info",
           center: "title",
           right: "goto,prev,next,today",
-
         }}
         editable={true}
         droppable={true}

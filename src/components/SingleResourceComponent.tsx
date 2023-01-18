@@ -4,7 +4,10 @@ import "../style/ResourcesDialog.css";
 import TextField from "@mui/material/TextField";
 import SaveIcon from "@mui/icons-material/SaveOutlined";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined"
+import ColorIcon from "@mui/icons-material/Circle"
 import IconButton from "@mui/material/IconButton";
+import Popover from '@mui/material/Popover';
+import { HexColorPicker } from "react-colorful";
 import { ContentType, ResourceType, SingleResourceComponentProps } from "../Types";
 import ConfirmationDialog from "./ConfirmationDialog";
 import { deleteResource, editResource } from "../FCWrapper";
@@ -13,9 +16,30 @@ import { useDelete } from "../Hooks";
 const SingleResourceComponent = ({ resource, calendarRef }: SingleResourceComponentProps) => {
     const [edited, setEdited] = useState<boolean>(false)
     const [singleResource, setSingleResource] = useState<ResourceType | null>(null)
+
+    const [color, setColor] = useState<string>(resource.eventColor);
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
     useEffect(() => {
         setSingleResource(resource)
     }, [resource])
+
+    useEffect(() => {
+        if (singleResource)
+            setColor(singleResource?.eventColor)
+    }, [singleResource])
+
+    useEffect(() => {
+        if (singleResource)
+            setSingleResource({ ...singleResource, eventColor: color })
+    }, [color])
 
     const changeResource = async () => {
         if (singleResource && calendarRef.current?.getApi()) {
@@ -49,6 +73,26 @@ const SingleResourceComponent = ({ resource, calendarRef }: SingleResourceCompon
                 ></TextField>
             </div>
             <div className="buttons">
+                <IconButton onClick={handleClick}>
+                    <ColorIcon sx={{ color: color }}></ColorIcon>
+                </IconButton>
+                <Popover
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: "top",
+                        horizontal: "center"
+                    }}
+                >
+                    <div style={{ display: "flex", overflow: "hidden" }}>
+                        <HexColorPicker style={{ borderRadius: "4px" }} color={color} onChange={(e) => { setColor(e); setEdited(true) }} />
+                    </div>
+                </Popover>
                 <IconButton disabled={!edited} color="info" onClick={changeResource}>
                     <SaveIcon></SaveIcon>
                 </IconButton>

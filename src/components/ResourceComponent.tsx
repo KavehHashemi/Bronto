@@ -47,11 +47,13 @@ const ResourceComponent = ({ calendarRef, open, openHandler }: ResourceComponent
                 </div>
             </Header>
             <Content className="content-container">
-                <InputLabel className="labels">Existing resource</InputLabel>
-                <ResourceListComponent
-                    resources={array}
-                    calendarRef={calendarRef}
-                ></ResourceListComponent>
+                <InputLabel className="labels">Existing resources</InputLabel>
+                <div style={{ minHeight: "2rem" }}>
+                    <ResourceListComponent
+                        resources={array}
+                        calendarRef={calendarRef}
+                    ></ResourceListComponent>
+                </div>
                 <InputLabel className="labels">Add a new resource</InputLabel>
                 <div className="existing-fields">
                     <TextField
