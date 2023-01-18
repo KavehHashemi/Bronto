@@ -20,14 +20,13 @@ const DateComponent = ({ open, openHandler, calendarRef }: DateComponentProps) =
     const GoTo = () => {
         if (calendarRef) {
             calendarRef.current?.getApi().gotoDate(date?.toDate())
-            openHandler();
         }
         openHandler();
     }
 
     if (!open) return null
     return (
-        <Dialog fullWidth open={open} onClose={openHandler}>
+        <Dialog open={open} onClose={openHandler}>
             <Header style={{ display: "flex", justifyContent: "space-between" }}>
                 <div>
                     Select a date to go to

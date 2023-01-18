@@ -96,8 +96,8 @@ const CalendarComponent = () => {
     return (
       <div style={{ paddingInline: "0.3rem" }}>
         <i>{e.event.title}</i>
-        <i> - </i>
-        <i>{e.event.extendedProps.description}</i>
+        {/* <i> - </i> */}
+        <i>{e.event.extendedProps.description ? ` - ${e.event.extendedProps.description}` : null}</i>
       </div>
     );
   };
